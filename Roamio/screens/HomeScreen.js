@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 import { GOOGLE_API_KEY } from '@env';
 import {GooglePlacesAutocomplete, GooglePlaceDetail} from "react-native-google-places-autocomplete";
 import Constants from "expo-constants";
-
+import { Ionicons } from '@expo/vector-icons';
 
 //const HomeScreen = () => {
 export default function HomeScreen(){
@@ -126,7 +126,7 @@ export default function HomeScreen(){
 
             {/* Button to recenter */}
             <TouchableOpacity style={styles.recenterButton} onPress={handleRecenter}>
-                <Text style={styles.recenterButtonText}>Recenter</Text>
+                <Ionicons name={"location"} size={20} color={"#FFF"}/>
             </TouchableOpacity>
 
         </View>
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         bottom: 20,
         alignSelf: "center",
-        backgroundColor: "white",
+        backgroundColor: "#FF6F61",
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 10,
