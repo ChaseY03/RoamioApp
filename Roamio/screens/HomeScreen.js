@@ -66,16 +66,17 @@ export default function HomeScreen(){
                         longitudeDelta: 0.002,
                     }}
                 >
+
                     <Marker
                         coordinate={{
                             latitude: location.coords.latitude,
                             longitude: location.coords.longitude,
                         }}
-                        title="Current location"
+
                     />
                 </MapView>
             ) : (
-                <Text>Loading...</Text>
+                <Text>Loading map...</Text>
             )}
             {errorMsg && <Text>{errorMsg}</Text>}
 
@@ -87,13 +88,13 @@ export default function HomeScreen(){
                         listView: styles.searchResultsList,
                         //textInput:styles.searchInput,
                     }}
-                    GooglePlacesDetailsQuery={{ fields: "geometry" }}
+                    GooglePlacesDetailsQuery={{ fields: "geometry"}}
                     fetchDetails={true}
                     placeholder="Where do you want to go?"
                     query={{
                         key: GOOGLE_API_KEY,
                         language: "en",
-                        radius: 30000,
+                        //radius: 30000,
                         position: location ? `${location.coords.latitude}, ${location.coords.longitude}` : null,
                     }}
 

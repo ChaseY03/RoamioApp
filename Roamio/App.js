@@ -21,7 +21,6 @@ const App = () => {
                 <Stack.Group>
                     <Stack.Screen name="Splash" component={SplashScreen}  />
                     <Stack.Screen name="Home" component={Navigation} />
-                    <Stack.Screen name="Account" component={AccountScreen} />
                     <Stack.Screen name="Register" component={RegisterScreen} />
                     <Stack.Screen name="Login" component={LoginScreen} />
                 </Stack.Group>

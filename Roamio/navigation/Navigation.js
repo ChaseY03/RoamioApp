@@ -11,7 +11,7 @@ const Nav = createBottomTabNavigator();
 
 const Navigator = () => {
     return (
-        <Nav.Navigator initialRouteName={"Main"} screenOptions={{headerShown:false}}>
+        <Nav.Navigator initialRouteName={"Main"} screenOptions={{headerShown:false , tabBarActiveTintColor: "#FF6F61"}} >
             <Nav.Screen name="Weather" component={WeatherScreen} options={{
                 tabBarIcon: ({ color, size }) => (
                     <Ionicons name="cloud" size={size} color={color} />
@@ -22,9 +22,9 @@ const Navigator = () => {
                     <Ionicons name="camera" size={size} color={color} />
                 ),
             }}/>
-            <Nav.Screen name="Main" component={HomeScreen}  options={{ tabBarLabel: '' ,
+            <Nav.Screen name="Main" component={HomeScreen}  options={{ tabBarLabel: 'Explore' ,
                 tabBarIcon: ({ color, size }) => (
-                <Ionicons name="home" size={size} color={color} />
+                <Ionicons name="map" size={size} color={color} />
                 ),
             }} />
             <Nav.Screen name="Saved locations" component={SavedLocationsScreen} options={{
