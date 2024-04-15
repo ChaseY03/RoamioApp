@@ -58,6 +58,13 @@ export default function HomeScreen(){
         if (details) {
             const { lat, lng } = details.geometry.location;
             setStartLocation({ latitude: lat, longitude: lng });
+            const moveMap = {
+                latitude: lat,
+                longitude: lng,
+                latitudeDelta: 0.003,
+                longitudeDelta: 0.003,
+            };
+            mapRef?.current?.animateToRegion(moveMap, 500);
         } else {
             // If no details are provided, use the current location as the start location
             setStartLocation({
@@ -107,8 +114,8 @@ export default function HomeScreen(){
                     initialRegion={{
                         latitude: location.coords.latitude,
                         longitude: location.coords.longitude,
-                        latitudeDelta: 0.002, //Zoom levels
-                        longitudeDelta: 0.002,
+                        latitudeDelta: 0.003, //Zoom levels
+                        longitudeDelta: 0.003,
                     }}
                 >
                     {startLocation && (
@@ -196,8 +203,8 @@ export default function HomeScreen(){
                         const moveMap = {
                             latitude: lat,
                             longitude: lng,
-                            latitudeDelta: 0.002,
-                            longitudeDelta: 0.002,
+                            latitudeDelta: 0.003,
+                            longitudeDelta: 0.003,
                         };
                         mapRef?.current?.animateToRegion(moveMap, 500);
                         setDestination({latitude: lat, longitude: lng});

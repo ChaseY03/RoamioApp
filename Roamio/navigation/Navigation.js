@@ -6,8 +6,13 @@ import AccountScreen from "../screens/AccountScreen";
 import WeatherScreen from "../screens/WeatherScreen";
 import SavedLocationsScreen from "../screens/SavedLocationsScreen";
 import AttractionsScreen from "../screens/AttractionsScreen";
+import {createStackNavigator} from "@react-navigation/stack";
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
+import {TouchableOpacity} from "react-native";
 
 const Nav = createBottomTabNavigator();
+const AccNav = createStackNavigator();
 
 const Navigator = () => {
     return (
@@ -32,12 +37,34 @@ const Navigator = () => {
                     <Ionicons name="bookmark" size={size} color={color} />
                 ),
             }}/>
-            <Nav.Screen name="Account" component={AccountScreen} options={{
+            <Nav.Screen name="Account" component={AccountStackNavigator} options={{
                 tabBarIcon: ({ color, size }) => (
                     <Ionicons name="person" size={size} color={color} />
                 ),
             }}/>
         </Nav.Navigator>
+    );
+};
+
+const AccountStackNavigator = () => {
+    return (
+        <AccNav.Navigator screenOptions={{headerShown:false}}>
+            <AccNav.Screen name="AccountStack" component={AccountScreen}  />
+            <AccNav.Screen name="Register" component={RegisterScreen} options={({ navigation }) => ({
+                headerLeft: () => (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Ionicons name="arrow-back" size={24} color="black" />
+                    </TouchableOpacity>
+                ),
+            })} />
+            <AccNav.Screen name="Login" component={LoginScreen} options={({ navigation }) => ({
+                headerLeft: () => (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Ionicons name="arrow-back" size={24} color="black" />
+                    </TouchableOpacity>
+                ),
+            })}/>
+        </AccNav.Navigator>
     );
 };
 
