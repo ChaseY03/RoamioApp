@@ -50,20 +50,8 @@ const AccountStackNavigator = () => {
     return (
         <AccNav.Navigator screenOptions={{headerShown:false}}>
             <AccNav.Screen name="AccountStack" component={AccountScreen}  />
-            <AccNav.Screen name="Register" component={RegisterScreen} options={({ navigation }) => ({
-                headerLeft: () => (
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Ionicons name="arrow-back" size={24} color="black" />
-                    </TouchableOpacity>
-                ),
-            })} />
-            <AccNav.Screen name="Login" component={LoginScreen} options={({ navigation }) => ({
-                headerLeft: () => (
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Ionicons name="arrow-back" size={24} color="black" />
-                    </TouchableOpacity>
-                ),
-            })}/>
+            <AccNav.Screen name="Register" component={RegisterScreen} />
+            <AccNav.Screen name="Login" component={LoginScreen}/>
         </AccNav.Navigator>
     );
 };

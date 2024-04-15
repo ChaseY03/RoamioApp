@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import Constants from "expo-constants";
 import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
+import AccountScreen from "./AccountScreen";
 
 
 const LoginScreen = () => {
@@ -15,6 +16,7 @@ const LoginScreen = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleLogin = async () => {
         console.log('Email:', email);
@@ -24,12 +26,12 @@ const LoginScreen = () => {
                 email: email,
                 password: password
             });
-            if (response.data === "Success") {
-                // alert("Logged in"); //DEV CODE REMOVE LATER
-                console.log('Login success')
-            } else {
+            if (response.data.status === "Success") {
+                //console.log('Login success')
+                navigation.navigate('AccountStack');
+            } else if (response.data.status === "Fail"){
                 console.log('No login found')
-                alert("No login found");
+                setErrorMessage("Incorrect email or password");
             }
         } catch (error) {
             console.error('Error:', error);
@@ -42,7 +44,7 @@ const LoginScreen = () => {
                 <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
 
-            <Text style={styles.title}>LOGIN</Text>
+            <Text style={styles.title}>Roamio login</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -50,6 +52,7 @@ const LoginScreen = () => {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                textContentType="oneTimeCode"
             />
             <TextInput
                 style={styles.input}
@@ -57,8 +60,10 @@ const LoginScreen = () => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                autoCapitalize="none"
+                textContentType="oneTimeCode"
             />
-
+            {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
@@ -92,6 +97,15 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    input: {
+        width: '80%',
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        marginBottom: 10,
+        paddingHorizontal: 10,
     },
     loginButton :{
         width: '80%',
