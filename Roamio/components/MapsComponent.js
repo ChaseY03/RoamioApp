@@ -8,14 +8,17 @@ const fetchDirections = async (origin, destination) => {
         const destinationStr = `${destination.latitude},${destination.longitude}`;
 
         const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destinationStr}&key=${GOOGLE_API_KEY}`
+            `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destinationStr}&key=${GOOGLE_API_KEY}&travelmode=walking`
         );
-        console.log(response.data);
+        //console.log(response.data);
         if (response.data.status === 'OK') {
-            // Directions retrieved successfully
-            const route = response.data.routes[0]; // Assuming there's only one route
-            const steps = route.legs[0].steps; // Steps for the first leg of the route
-            return steps;
+            const steps = response.data.routes[0].legs[0].steps.map(step => ({
+                instructions: step.html_instructions.replace(/<[^>]*>?/gm, ''),
+            }));
+            const distance = response.data.routes[0].legs[0].distance.text;
+            const duration = response.data.routes[0].legs[0].duration.text;
+            //console.log({ directions: steps, distance, duration })
+            return { directions: steps, distance, duration };
         } else {
             // Log a generic message if no routes were found
             console.error('No routes found between the specified origin and destination.');

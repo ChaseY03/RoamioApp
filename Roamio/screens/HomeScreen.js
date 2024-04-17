@@ -1,13 +1,17 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, StyleSheet, Button, Dimensions, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, Button, Dimensions, TouchableOpacity, ScrollView} from 'react-native';
 import Constants from "expo-constants";
+import { Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MapView, {Marker, PROVIDER_GOOGLE, Polyline} from "react-native-maps";
 import * as Location from 'expo-location';
 import { GOOGLE_API_KEY } from '@env';
 import {GooglePlacesAutocomplete, GooglePlaceDetail} from "react-native-google-places-autocomplete";
 import MapViewDirections from "react-native-maps-directions";
-import { fetchDirections} from '../components/mapsApi';
+import { fetchDirections } from '../components/MapsComponent';
+import DirectionsComponent from '../components/DirectionsComponent';
+import {StatusBar} from "expo-status-bar";
+
 
 //const HomeScreen = () => {
 export default function HomeScreen(){
@@ -17,18 +21,22 @@ export default function HomeScreen(){
     const [destination, setDestination] = useState(null);
     const [showSearch, setShowSearch] = useState(false);
     const [startLocation, setStartLocation] = useState(null);
+    const [guide, setGuide] = useState(false);
+    const [distance, setDistance] = useState(0);
+    const [duration, setDuration] = useState(0);
     const mapRef = useRef(null); // moves the maps 'camera'
-
+/*
     if (startLocation && destination) {
         const start = startLocation;
         const end = destination;
-
+        const travelMode = "DRIVING";
         //const start = '51.5280,-0.1025'; // Example: City University of London
         //const end = '51.5074,-0.1278'; // Example: Buckingham Palace
         console.log("start and end: " , start, end);
 
-        fetchDirections(start, end)
+        fetchDirections(start, end, travelMode)
             .then(steps => {
+                setGuide(true);
                 console.log('Directions:', steps);
                 // Use the steps to display navigation instructions in your app
             })
@@ -36,7 +44,7 @@ export default function HomeScreen(){
                 console.error('Failed to fetch directions:', error);
                 // Handle the error gracefully in your app
             });
-    }
+    }*/
 
     const handleRecenter = () => {
         if (mapRef.current && originalLocation) {
@@ -163,13 +171,20 @@ export default function HomeScreen(){
                             //waypoints={waypoints}
                                            precision="high"
                         />
+
                     )}
+
+                    {guide && (
+                        <View style={styles.directionsContainer}>
+                            <DirectionsComponent origin={startLocation} destination={destination} travelMode="WALKING"/>
+                        </View>
+                    )}
+
                 </MapView>
             ) : (
                 <Text>Loading map...</Text>
             )}
             {errorMsg && <Text>{errorMsg}</Text>}
-
 
             <View style={[styles.searchBar ,showSearch ? styles.startVisible : null]}>
                 <GooglePlacesAutocomplete
@@ -210,6 +225,9 @@ export default function HomeScreen(){
                         setDestination({latitude: lat, longitude: lng});
                         setShowSearch(true);
                         setStartLocation(originalLocation.coords);
+                        setGuide(true);
+                       // setDistance();
+                        //setDuration();
                         //  }
                     }}
                     onFail={error => console.log(error)}
@@ -218,6 +236,7 @@ export default function HomeScreen(){
                     debounce={200}
                 />
             </View>
+
             {showSearch && (
                 <View style={styles.startLocationSearchBar}>
                     <GooglePlacesAutocomplete
@@ -227,7 +246,7 @@ export default function HomeScreen(){
                         }}
                         GooglePlacesDetailsQuery={{ fields: "geometry"}}
                         fetchDetails={true}
-                        placeholder="Starting location"
+                        placeholder="Change starting location"
                         query={{
                             key: GOOGLE_API_KEY,
                             language: "en",
@@ -267,7 +286,6 @@ export default function HomeScreen(){
                     />
                 </View>
             )}
-
             {/* Button to recenter */}
             <TouchableOpacity style={styles.recenterButton} onPress={handleRecenter}>
                 <Ionicons name={"location"} size={20} color={"#FFF"}/>
@@ -303,9 +321,22 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 4,
         padding: 8,
-        //borderRadius: 8,
         top: Constants.statusBarHeight,
-        flex: 0,
+    },
+    startVisible: {
+        top: Constants.statusBarHeight + 80, // Adjust according to the height of the destination search bar
+    },
+    startLocationSearchBar: {
+        position: "absolute",
+        width: "100%",
+        backgroundColor: "white",
+        shadowColor: "black",
+        shadowOffset: { width: 2, height: 1 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        elevation: 4,
+        padding: 8,
+        top: Constants.statusBarHeight, // Adjust according to the height of the destination search bar
     },
     searchInput:{
         borderColor: "#888",
@@ -316,20 +347,10 @@ const styles = StyleSheet.create({
     searchResultsList:{
         backgroundColor: "#FFF",
     },
-    startLocationSearchBar: {
-        position: "absolute",
-        top: Constants.statusBarHeight,
-        width: "100%",
-        backgroundColor: "white",
-        padding: 8,
-        shadowColor: "black",
-        shadowOffset: { width: 2, height: 2 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 4,
-    },
-    startVisible: {
-        top: Constants.statusBarHeight + 25 + 50, // Adjust according to the height of the destination search bar
+    directionsContainer: {
+        top: 200, // Example margin to separate from search bars
+        //backgroundColor: '#f0f0f0',
+        padding: 10,
     },
     transportBar:{
         width: "100%",
@@ -365,5 +386,3 @@ const styles = StyleSheet.create({
         flex:0,
     },
 });
-
-//export default HomeScreen;
