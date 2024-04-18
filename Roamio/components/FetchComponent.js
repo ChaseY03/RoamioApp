@@ -13,8 +13,13 @@ const fetchDirections = async (origin, destination) => {
         console.log("fetch",destinationStr)
         console.log(response.data);
         if (response.data.status === 'OK') {
+            //const steps = response.data.routes[0].legs[0].steps.map(step => ({
+           //     instructions: step.html_instructions.replace(/<[^>]*>?/gm, ''),
+            //}));
             const steps = response.data.routes[0].legs[0].steps.map(step => ({
                 instructions: step.html_instructions.replace(/<[^>]*>?/gm, ''),
+                distance: step.distance.text,
+                duration: step.duration.text
             }));
             const distance = response.data.routes[0].legs[0].distance.text;
             const duration = response.data.routes[0].legs[0].duration.text;

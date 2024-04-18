@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {View, Text, StyleSheet, ScrollView, FlatList} from 'react-native';
-import { fetchDirections } from './MapsComponent';
+import { fetchDirections } from './FetchComponent';
 import Constants from "expo-constants";
 const DirectionsComponent = ({ origin, destination }) => {
     const [directions, setDirections] = useState([]);
@@ -32,7 +32,13 @@ const DirectionsComponent = ({ origin, destination }) => {
     }, [origin, destination]);
 
     const renderDirectionItem = ({ item }) => {
-        return <Text style={styles.direction}>{item.instructions}</Text>;
+        return (
+            <View style={styles.stepContainer}>
+                <Text style={styles.stepInstruction}>{item.instructions}</Text>
+                <Text style={styles.stepDistance}>{item.distance}</Text>
+                <Text style={styles.stepDuration}>{item.duration}</Text>
+            </View>
+        );
     };
 
     return (
@@ -44,18 +50,16 @@ const DirectionsComponent = ({ origin, destination }) => {
             <Text style={styles.heading}>Directions:</Text>
             <ScrollView style={styles.scrollView}>
                 {directions.map((step, index) => (
-                    <Text key={index} style={styles.step}>{step.instructions}</Text>
+                    <View key={index}>{renderDirectionItem({ item: step })}</View>
                 ))}
             </ScrollView>
         </View>
-
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         padding: 10,
-        //backgroundColor: '#f0f0f0',
         marginBottom: 10,
     },
     heading: {
@@ -72,13 +76,20 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
     },
-    step: {
-        marginBottom: 10, // Add margin between each step
-        //fontSize: 16, // Adjust font size as needed
-        lineHeight: 15, // Adjust line height for spacing between lines
+    stepContainer: {
+        marginBottom: 10,
+    },
+    stepInstruction: {
+        fontSize: 16,
+    },
+    stepDistance: {
+        color: 'gray',
+    },
+    stepDuration: {
+        color: 'gray',
     },
     scrollView: {
-        maxHeight: 200, // Set maximum height for ScrollView
+        maxHeight: 200,
     },
 });
 
