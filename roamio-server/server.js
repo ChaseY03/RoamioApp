@@ -104,8 +104,19 @@ app.get('/checkLoginStatus', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-    loggedIn = false;
-    res.status(200).json({ loggedIn: loggedIn });
+
+    //res.status(200).json({ loggedIn: loggedIn });
+    try {
+        // Perform logout logic here
+        // For example, clearing any session data, etc.
+
+        // Assuming logout was successful
+        loggedIn = false;
+        res.json({ loggedOut: true });
+    } catch (error) {
+        console.error('Error logging out:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
    // console.log("logged out status:",loggedIn)
 });
 
@@ -127,5 +138,23 @@ app.post('/savelocation', (req, res) => {
 });
 
 
+app.get('/savedlocations', async (req, res) => {
+    const { userID } = req.query;
 
+    try {
+        console.log("fetching saved locations")
+        // Query to fetch saved locations for the provided userID
+        const sql = 'SELECT * FROM usersavedlocation';
+
+        //const result = await db.query(sql, [userID]); // Pass userID as parameter
+        const result = await db.query(sql); // Pass userID as parameter
+        const savedLocations = result.rows;
+
+        res.json({ savedLocations });
+        console.log("locations", result)
+    } catch (error) {
+        console.error('Error fetching saved locations:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 

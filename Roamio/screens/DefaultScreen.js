@@ -15,6 +15,7 @@ import DirectionsComponent from '../components/DirectionsComponent';
 import {StatusBar} from "expo-status-bar";
 import Map from "../components/Map";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useIsFocused} from "@react-navigation/native";
 
 const DefaultScreen = () => {
 
@@ -26,21 +27,27 @@ const DefaultScreen = () => {
     const [guide, setGuide] = useState(false);
     const [userID, setUserID] = useState(null);
 
+    const isFocused = useIsFocused();
     useEffect(() => {
-        retrieveUserID();
-    }, []);
+        // Retrieve userID from AsyncStorage
+        if (isFocused){
+            const retrieveUserID = async () => {
+                try {
+                    const storedUserID = await AsyncStorage.getItem('userID');
+                    if (storedUserID !== null) {
+                        const parsedUserID = JSON.parse(storedUserID);
+                        setUserID(parsedUserID);
+                        //console.log(parsedUserID)
+                    }
+                    setGuide(false)
+                } catch (error) {
+                    console.error('Error retrieving userID:', error);
+                }
+            };
 
-    const retrieveUserID = async () => {
-        try {
-            const storedUserID = await AsyncStorage.getItem('userID');
-            if (storedUserID !== null) {
-                setUserID(JSON.parse(storedUserID));
-                //console.log(userID)
-            }
-        } catch (error) {
-            console.error('Error retrieving userID:', error);
+            retrieveUserID();
         }
-    };
+    }, [isFocused]);
 
     useEffect(() => {
         (async () => {

@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import {View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, TextInput, Alert} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { fetchDirections } from './FetchDirectionsComponent';
-import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import {Ionicons} from "@expo/vector-icons";
-import {log} from "expo/build/devtools/logger";
-import {useRoute} from "@react-navigation/native";
-const DirectionsComponent = ({ origin, destination, userID, loggedIn }) => {
+import { Ionicons } from "@expo/vector-icons";
+
+const DirectionsComponent = ({ origin, destination, loggedIn }) => {
     const [directions, setDirections] = useState([]);
     const [distance, setDistance] = useState('');
     const [duration, setDuration] = useState('');
     const [saveMode, setSaveMode] = useState(false);
     const [saveName, setSaveName] = useState('');
+    const [userID, setUserID] = useState(null); // State to hold the retrieved userID
+
+    useEffect(() => {
+        retrieveUserID(); // Retrieve userID when the component mounts
+    }, []);
 
     useEffect(() => {
         if (origin && destination) {
@@ -47,13 +51,34 @@ const DirectionsComponent = ({ origin, destination, userID, loggedIn }) => {
         );
     };
 
+    const retrieveUserID = async () => {
+        try {
+            const storedUserID = await AsyncStorage.getItem('userID');
+            if (storedUserID !== null) {
+                // Parse the stored userID back to its original format
+                const userID = JSON.parse(storedUserID);
+                // userID found in AsyncStorage
+                console.log("UserID retrieved from AsyncStorage:", userID);
+                setUserID(userID); // Set the retrieved userID in state
+            }
+        } catch (error) {
+            console.error('Error retrieving userID:', error);
+        }
+    };
+
+
     const toggleSaveMenu = async () => {
         setSaveMode(true);
-    }
+    };
+
     const handleSaveRoute = async () => {
         const originStr = `${origin.coords.latitude},${origin.coords.longitude}`;
         const destinationStr = `${destination.location.lat},${destination.location.lng}`;
         try {
+            if (!userID) {
+                console.error('UserID not found in state');
+                return;
+            }
             const response = await axios.post('http://192.168.1.241:3000/savelocation', {
                 userID: userID,
                 locationName: saveName,
@@ -66,7 +91,6 @@ const DirectionsComponent = ({ origin, destination, userID, loggedIn }) => {
             setSaveMode(false); // Hide the save menu screen
             setSaveName('');
             Alert.alert("Location saved");
-            //console.log("save route response", response)
         } catch (error) {
             console.error('Error saving route:', error);
         }
@@ -74,7 +98,7 @@ const DirectionsComponent = ({ origin, destination, userID, loggedIn }) => {
 
     return (
         <View style={styles.container}>
-            {loggedIn && !saveMode ? (
+            {userID && !saveMode ? (
                 <TouchableOpacity style={styles.saveButton} onPress={toggleSaveMenu}>
                     <Ionicons name="bookmark" size={20} color="#FFF" />
                 </TouchableOpacity>
@@ -87,7 +111,7 @@ const DirectionsComponent = ({ origin, destination, userID, loggedIn }) => {
                         value={saveName}
                         onChangeText={setSaveName}
                     />
-                    <TouchableOpacity style={styles.saveButton} onPress={toggleSaveMenu}>
+                    <TouchableOpacity style={styles.saveButton} onPress={handleSaveRoute}>
                         <Ionicons name="bookmark" size={20} color="#FFF" />
                     </TouchableOpacity>
                 </View>

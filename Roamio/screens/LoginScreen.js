@@ -1,10 +1,8 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Constants from "expo-constants";
-import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
-import AccountScreen from "./AccountScreen";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
@@ -17,7 +15,6 @@ const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    //const [userID, setUserID] = useState(null);
 
     const handleLogin = async () => {
         console.log('Email:', email);
@@ -30,14 +27,13 @@ const LoginScreen = () => {
             if (response.data.status === "Success") {
                 const userID = response.data.userID;
                 await AsyncStorage.setItem('userID', JSON.stringify(userID));
-                //console.log("Login userID",userID); // Check if userID is logged correctly
-                navigation.navigate('AccountStack', { userID }); // Pass userID as a parameter
+                navigation.navigate('AccountStack', { userID }); // Navigate to the account screen with userID
             } else if (response.data.status === "Fail") {
-                console.log('No login found')
                 setErrorMessage("Incorrect email or password");
             }
         } catch (error) {
             console.error('Error:', error);
+            Alert.alert('Error', 'An error occurred while logging in. Please try again later.');
         }
     };
 
@@ -55,7 +51,6 @@ const LoginScreen = () => {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
-                textContentType="oneTimeCode"
             />
             <TextInput
                 style={styles.input}
@@ -64,13 +59,11 @@ const LoginScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
                 autoCapitalize="none"
-                textContentType="oneTimeCode"
             />
             {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
-
         </View>
     );
 };
@@ -110,13 +103,17 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         paddingHorizontal: 10,
     },
-    loginButton :{
+    loginButton: {
         width: '80%',
         backgroundColor: '#FF6F61',
         paddingVertical: 10,
         borderRadius: 5,
         alignItems: 'center',
-    }
+    },
+    error: {
+        color: 'red',
+        marginBottom: 10,
+    },
 });
 
 export default LoginScreen;
