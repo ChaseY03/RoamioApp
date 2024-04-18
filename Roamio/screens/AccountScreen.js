@@ -1,9 +1,47 @@
 import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from "axios";
-import {useIsFocused} from "@react-navigation/native";
+import {useIsFocused, useNavigation, useRoute} from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AccountScreen = ({ navigation }) => {
+    //const navigation = useNavigation();
+    const [loggedIn, setLoggedIn] = useState(false);
+   // const { userID } = route.params || {};
+    //const [userIDState, setUserIDState] = useState(null);
+    const [userID, setUserID] = useState(null);
+
+    useEffect(() => {
+        // Check if userID exists in AsyncStorage
+        retrieveUserID();
+    }, []);
+
+    const storeUserID = async (userID) => {
+        try {
+            const userIDString = JSON.stringify(userID); // Stringify the userID
+            await AsyncStorage.setItem('userID', userIDString);
+            setUserID(userID);
+        } catch (error) {
+            console.error('Error storing userID:', error);
+        }
+    };
+
+    const retrieveUserID = async () => {
+        try {
+            const storedUserID = await AsyncStorage.getItem('userID');
+            if (storedUserID !== null) {
+                // Parse the stored userID back to its original format
+                const userID = JSON.parse(storedUserID);
+                // userID found in AsyncStorage
+                setUserID(userID);
+            }
+        } catch (error) {
+            console.error('Error retrieving userID:', error);
+        }
+    };
+
+
+
     const handleRegisterPress = () => {
         navigation.navigate('Register');
     };
@@ -12,13 +50,19 @@ const AccountScreen = ({ navigation }) => {
         navigation.navigate('Login');
     };
 
-    const [loggedIn, setLoggedIn] = useState(false);
+
+
     const isFocused = useIsFocused(); //used to check if the current screen is the one loaded
 
+    //navigation.navigate('Main', { userID });
     useEffect(() => {
         if (isFocused) {
             checkLoginStatus(); // Call checkLoginStatus only when the screen is focused
+            //navigation.navigate('Main', { userID });
+            //setUserIDState(userID);
+           // console.log(userID)
         }
+   // }, [isFocused, userID]); // Add isFocused to the dependency array
     }, [isFocused]); // Add isFocused to the dependency array
 
     const checkLoginStatus = async () => {
@@ -36,6 +80,22 @@ const AccountScreen = ({ navigation }) => {
             //console.log("logging out")
             const response = await axios.get('http://192.168.1.241:3000/logout');
             setLoggedIn(response.data.loggedIn);
+            await AsyncStorage.removeItem('userID');
+            await AsyncStorage.clear();
+            // Get all keys from AsyncStorage
+            const getAllKeys = async () => {
+                let keys = [];
+                try {
+                    keys = await AsyncStorage.getAllKeys();
+                    console.log(keys);
+                } catch (e) {
+                    console.error('Error reading AsyncStorage keys:', e);
+                }
+            };
+
+            // Call getAllKeys function
+            await getAllKeys();
+            //console.log(userID)
             //console.log("status", loggedIn)
         } catch (error) {
             console.error('Error logging out:', error);
@@ -47,6 +107,11 @@ const AccountScreen = ({ navigation }) => {
             {loggedIn ? (
                 <>
                     <Text style={styles.title}>Welcome to Your Account</Text>
+                    {userID ? (
+                        <Text style={styles.title}>User ID: {userID}</Text>
+                    ) : (
+                        <Text style={styles.title}>User ID not available</Text>
+                    )}
                     <TouchableOpacity style={styles.button} onPress={handleLogout}>
                         <Text style={styles.buttonText}>Logout</Text>
                     </TouchableOpacity>

@@ -45,7 +45,7 @@ app.post('/login', (req, res) => {
     const { email, password } = req.body;
     console.log(email,password)
     // Query the user table for the provided email and password
-    const sql = 'SELECT * FROM user WHERE userEmail = ? AND userPassword = ?';
+    const sql = 'SELECT userID FROM user WHERE userEmail = ? AND userPassword = ?';
     db.query(sql, [email, password], (err, results) => {
         if (err) {
             console.error('Error querying database:', err);
@@ -61,8 +61,9 @@ app.post('/login', (req, res) => {
             // User found with the provided credentials
             //console.log("found")
             loggedIn = true;
+            const userID = results[0].userID;
             //console.log("axios login status", loggedIn)
-            res.status(200).json({ status: "Success", message: 'Login successful'});
+            res.status(200).json({ status: "Success", userID: userID, message: 'Login successful'});
         }
     });
 });
@@ -107,6 +108,24 @@ app.get('/logout', (req, res) => {
     res.status(200).json({ loggedIn: loggedIn });
    // console.log("logged out status:",loggedIn)
 });
+
+
+app.post('/savelocation', (req, res) => {
+    // Extract route data from the request body
+    const { userID, locationName, origin, destination, directions, distance, duration } = req.body;
+    // Insert the route data into the database
+    db.query('INSERT INTO usersavedlocation (savedlocationUserID, savedlocationName, savedlocationOrigin, savedlocationDestination, savedlocationDirections, savedlocationDistance, savedlocationDuration) VALUES (?, ?, ?, ?, ?, ?, ?)', [userID, locationName, origin.toString(), destination.toString(), JSON.stringify(directions), distance, duration], (error, results) => {
+        if (error) {
+            console.error('Error saving route:', error);
+            res.status(500).json({ error: 'Failed to save route' });
+        } else {
+            res.status(200).json({ message: 'Route saved successfully' });
+            console.log("Saved location to user profile")
+        }
+    });
+
+});
+
 
 
 

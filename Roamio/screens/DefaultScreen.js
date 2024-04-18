@@ -10,18 +10,37 @@ import * as Location from 'expo-location';
 import { GOOGLE_API_KEY } from '@env';
 import {GooglePlacesAutocomplete, GooglePlaceDetail} from "react-native-google-places-autocomplete";
 import MapViewDirections from "react-native-maps-directions";
-import { fetchDirections } from '../components/FetchComponent';
+import { fetchDirections } from '../components/FetchDirectionsComponent';
 import DirectionsComponent from '../components/DirectionsComponent';
 import {StatusBar} from "expo-status-bar";
 import Map from "../components/Map";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DefaultScreen = () => {
+
     const [currentPos, setCurrentPos] = useState(null)
     const [origin, setOrigin] = useState(null);
     const [destination, setDestination] = useState(null)
     const [showSearch, setShowSearch] = useState(false);
     const [startLocation, setStartLocation] = useState(null);
     const [guide, setGuide] = useState(false);
+    const [userID, setUserID] = useState(null);
+
+    useEffect(() => {
+        retrieveUserID();
+    }, []);
+
+    const retrieveUserID = async () => {
+        try {
+            const storedUserID = await AsyncStorage.getItem('userID');
+            if (storedUserID !== null) {
+                setUserID(JSON.parse(storedUserID));
+                //console.log(userID)
+            }
+        } catch (error) {
+            console.error('Error retrieving userID:', error);
+        }
+    };
 
     useEffect(() => {
         (async () => {
@@ -149,7 +168,7 @@ const DefaultScreen = () => {
 
                 <Map currentPos={currentPos} origin={origin} destination={destination} />
                 {guide && (
-                    <DirectionsComponent origin={origin} destination={destination}/>
+                    <DirectionsComponent origin={origin} destination={destination} userID={userID} />
                 )}
             </View>
         </SafeAreaView>

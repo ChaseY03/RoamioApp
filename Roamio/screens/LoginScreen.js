@@ -5,7 +5,7 @@ import Constants from "expo-constants";
 import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import AccountScreen from "./AccountScreen";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
     const navigation = useNavigation();
@@ -17,6 +17,7 @@ const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    //const [userID, setUserID] = useState(null);
 
     const handleLogin = async () => {
         console.log('Email:', email);
@@ -27,9 +28,11 @@ const LoginScreen = () => {
                 password: password
             });
             if (response.data.status === "Success") {
-                //console.log('Login success')
-                navigation.navigate('AccountStack');
-            } else if (response.data.status === "Fail"){
+                const userID = response.data.userID;
+                await AsyncStorage.setItem('userID', JSON.stringify(userID));
+                //console.log("Login userID",userID); // Check if userID is logged correctly
+                navigation.navigate('AccountStack', { userID }); // Pass userID as a parameter
+            } else if (response.data.status === "Fail") {
                 console.log('No login found')
                 setErrorMessage("Incorrect email or password");
             }

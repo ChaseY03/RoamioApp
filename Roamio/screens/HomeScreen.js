@@ -9,7 +9,7 @@ import * as Location from 'expo-location';
 import { GOOGLE_API_KEY } from '@env';
 import {GooglePlacesAutocomplete, GooglePlaceDetail} from "react-native-google-places-autocomplete";
 import MapViewDirections from "react-native-maps-directions";
-import { fetchDirections } from '../components/FetchComponent';
+import { fetchDirections } from '../components/FetchDirectionsComponent';
 import DirectionsComponent from '../components/DirectionsComponent';
 import {StatusBar} from "expo-status-bar";
 
