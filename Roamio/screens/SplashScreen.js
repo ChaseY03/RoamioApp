@@ -5,8 +5,8 @@ const SplashScreen = ({navigation}) => {
     useEffect(() => {
         // Simulate a delay to show splash screen for a certain duration
         const timeout = setTimeout(() => {
-            // Navigate to 'Home' screen
-            navigation.navigate('Home');
+            // Navigate to 'DefaultScreen' screen
+            navigation.navigate('DefaultScreen');
         }, 1500); // Adjust duration as needed
 
         return () => clearTimeout(timeout);
@@ -23,8 +23,8 @@ const SplashScreen = () => {
     useEffect(() => {
         // Simulate a delay to show splash screen for a certain duration
         const timeout = setTimeout(() => {
-            // Navigate to 'Home' screen
-            //navigation.navigate('Home');
+            // Navigate to 'DefaultScreen' screen
+            //navigation.navigate('DefaultScreen');
         }, 1500); // Adjust duration as needed
 
         return () => clearTimeout(timeout);

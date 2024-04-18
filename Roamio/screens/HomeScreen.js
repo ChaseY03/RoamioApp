@@ -14,8 +14,8 @@ import DirectionsComponent from '../components/DirectionsComponent';
 import {StatusBar} from "expo-status-bar";
 
 
-//const HomeScreen = () => {
-export default function HomeScreen(){
+const HomeScreen = () => {
+//export default function HomeScreen(){
     const [errorMsg, setErrorMsg] = useState(null);
     const [originalLocation, setOriginalLocation] = useState(null);
     const [location, setLocation] = useState(null);
@@ -307,3 +307,4 @@ export default function HomeScreen(){
     );
 };
 
+export default HomeScreen;

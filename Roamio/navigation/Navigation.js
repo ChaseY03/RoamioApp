@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
+import DefaultScreen from '../screens/DefaultScreen';
 import AccountScreen from "../screens/AccountScreen";
 import WeatherScreen from "../screens/WeatherScreen";
 import SavedLocationsScreen from "../screens/SavedLocationsScreen";
@@ -27,7 +28,7 @@ const Navigator = () => {
                     <Ionicons name="camera" size={size} color={color} />
                 ),
             }}/>
-            <Nav.Screen name="Main" component={HomeScreen}  options={{ tabBarLabel: 'Explore' ,
+            <Nav.Screen name="Main" component={DefaultScreen}  options={{ tabBarLabel: 'Explore' ,
                 tabBarIcon: ({ color, size }) => (
                 <Ionicons name="map" size={size} color={color} />
                 ),

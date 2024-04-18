@@ -54,7 +54,6 @@ const DirectionsComponent = ({ origin, destination }) => {
 
 const styles = StyleSheet.create({
     container: {
-        //marginTop: Constants.statusBarHeight + 150,
         padding: 10,
         //backgroundColor: '#f0f0f0',
         marginBottom: 10,

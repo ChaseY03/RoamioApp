@@ -54,7 +54,7 @@ const App = () => {
             <Stack.Navigator initialRouteName={SplashScreen} screenOptions = {{ headerShown:false}}>
                 <Stack.Group>
                     <Stack.Screen name="Splash" component={SplashScreen}  />
-                    <Stack.Screen name="Home" component={Navigation} />
+                    <Stack.Screen name="DefaultScreen" component={Navigation} />
                 </Stack.Group>
             </Stack.Navigator>
         </NavigationContainer>

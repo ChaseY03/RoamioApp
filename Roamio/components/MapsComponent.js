@@ -4,11 +4,13 @@ import { GOOGLE_API_KEY } from '@env';
 const fetchDirections = async (origin, destination) => {
     try {
         // Convert origin and destination objects to strings
-        const originStr = `${origin.latitude},${origin.longitude}`;
-        const destinationStr = `${destination.latitude},${destination.longitude}`;
+        const originStr = `${origin.coords.latitude},${origin.coords.longitude}`;
+        const destinationStr = `${destination.location.lat},${destination.location.lng}`;
         const response = await axios.get(
             `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destinationStr}&key=${GOOGLE_API_KEY}`
         );
+        console.log("fetch",originStr)
+        console.log("fetch",destinationStr)
         console.log(response.data);
         if (response.data.status === 'OK') {
             const steps = response.data.routes[0].legs[0].steps.map(step => ({
