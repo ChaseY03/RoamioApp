@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text } from 'react-native';
+import {View, Text, KeyboardAvoidingView, Platform} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import Navigator from './navigation/Navigation';
 import SplashScreen from './screens/SplashScreen';
@@ -19,12 +19,17 @@ const App = () => {
 
     return (
         <NavigationContainer>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? -50 : 0}
+                style={{flex:1}}>
             <StatusBar style={"dark"}/>
             {transition ? (
                 <Navigator />
             ) : (
                 <SplashScreen />
             )}
+            </KeyboardAvoidingView>
         </NavigationContainer>
     );
 };

@@ -18,13 +18,16 @@ const SavedLocationsScreen = () => {
                 if (storedUserID !== null) {
                     const parsedUserID = JSON.parse(storedUserID);
                     setUserID(parsedUserID);
-                    console.log("savedPage id",parsedUserID)
+                    //console.log("savedPage id",parsedUserID)
+                }
+                else {
+                    setUserID(null);
+                    setSavedLocations([]);
                 }
             } catch (error) {
                 console.error('Error retrieving userID:', error);
             }
         };
-
         retrieveUserID();
         }
     }, [isFocused]);
@@ -42,18 +45,18 @@ const SavedLocationsScreen = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            {!userID ? (
-                <View style={tw`flex-1 justify-center items-center`}>
-                    <Text>Login to save locations</Text>
+            {userID ? (
+                <View>
+                    <Text style={styles.heading}>Saved Locations</Text>
+                    <FlatList
+                        data={savedLocations}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id.toString()} // Assuming each saved location has a unique id
+                    />
                 </View>
             ) : (
-                <View>
-                <Text style={styles.heading}>Saved Locations</Text>
-                <FlatList
-                    data={savedLocations}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()} // Assuming each saved location has a unique id
-                />
+                <View style={tw`flex-1 justify-center items-center`}>
+                    <Text>Login to save locations</Text>
                 </View>
             )}
         </SafeAreaView>

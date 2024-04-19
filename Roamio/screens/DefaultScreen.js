@@ -38,7 +38,7 @@ const DefaultScreen = () => {
                     if (storedUserID !== null) {
                         const parsedUserID = JSON.parse(storedUserID);
                         setUserID(parsedUserID);
-                        console.log(parsedUserID)
+                        //console.log(parsedUserID)
                     }
 
                 } catch (error) {

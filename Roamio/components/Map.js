@@ -56,7 +56,7 @@ const Map = ({ currentPos, origin, destination }) => {
 
     return (
         <View style={tw`flex-1 relative`}>
-            {origin?.coords && (
+            {origin?.coords ? (
                 <MapView
                     showsUserLocation={true}
                     showsMyLocationButton={false}
@@ -112,6 +112,10 @@ const Map = ({ currentPos, origin, destination }) => {
                     )}
 
                 </MapView>
+            ):(
+                <View style={[tw`items-center`]}>
+                    <Text>Loading map...</Text>
+                </View>
             )}
             <TouchableOpacity
                 style={styles.recenterButton}

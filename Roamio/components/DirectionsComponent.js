@@ -4,6 +4,7 @@ import { fetchDirections } from './FetchDirectionsComponent';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
+import {Platform} from "react-native";
 
 const DirectionsComponent = ({ origin, destination, loggedIn }) => {
     const [directions, setDirections] = useState([]);
@@ -58,7 +59,7 @@ const DirectionsComponent = ({ origin, destination, loggedIn }) => {
                 // Parse the stored userID back to its original format
                 const userID = JSON.parse(storedUserID);
                 // userID found in AsyncStorage
-                console.log("UserID retrieved from AsyncStorage:", userID);
+                //console.log("UserID retrieved from AsyncStorage:", userID);
                 setUserID(userID); // Set the retrieved userID in state
             }
         } catch (error) {
@@ -79,6 +80,10 @@ const DirectionsComponent = ({ origin, destination, loggedIn }) => {
                 console.error('UserID not found in state');
                 return;
             }
+            if (!saveName.trim()) {
+                Alert.alert('Error', 'Please enter a name');
+                return;
+            }
             const response = await axios.post('http://192.168.1.241:3000/savelocation', {
                 userID: userID,
                 locationName: saveName,
@@ -90,7 +95,7 @@ const DirectionsComponent = ({ origin, destination, loggedIn }) => {
             });
             setSaveMode(false); // Hide the save menu screen
             setSaveName('');
-            Alert.alert("Location saved");
+            Alert.alert("Location saved", "Now viewable in your saved locations");
         } catch (error) {
             console.error('Error saving route:', error);
         }

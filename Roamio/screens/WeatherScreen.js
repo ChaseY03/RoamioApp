@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image} from 'react-native';
 import tw from "tailwind-react-native-classnames";
+import { Ionicons } from '@expo/vector-icons';
 import {WEATHER_API_KEY, GOOGLE_API_KEY} from '@env';
 import * as Location from 'expo-location';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -15,19 +16,21 @@ const WeatherScreen = () => {
     const [fetchWeather, setFetchWeather] = useState(false);
     const [location, setLocation] = useState(null);
     const [weatherData, setWeatherData] = useState(null);
+    const autocompleteRef = useRef(null);
+
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${location?.latitude}&lon=${location?.longitude}&appid=${WEATHER_API_KEY}&units=metric`;
+    const iconUrl = `https://openweathermap.org/img/wn/${weatherData?.weather[0].icon}@4x.png`;
 
     const isFocused = useIsFocused();
     useEffect(() => {
         // Resets when user clicks on weather screen tab
         if (isFocused) {
-
+            handleMyLocationPress();
+            if (autocompleteRef.current) {
+                autocompleteRef.current.setAddressText(''); // Set the value to an empty string
+            }
         }
     }, [isFocused]);
-
-    useEffect(() => {
-        console.log("location details:", location);
-    }, [location]);
 
 
     useEffect(() => {
@@ -42,7 +45,6 @@ const WeatherScreen = () => {
             setCurrentPos(currentUserPosition);
             setLocation(currentUserPosition.coords);
         };
-
         getLocation();
 
     }, [currentPos]);
@@ -65,21 +67,24 @@ const WeatherScreen = () => {
             fetchWeatherData();
             setFetchWeather(false); // Reset fetchWeather to false after fetching
         }
-    }, [location, initialFetch, fetchWeather]);
+    }, [location, initialFetch, fetchWeather, weatherData]);
 
     // Handle press event for My Location button
     const handleMyLocationPress = () => {
-        console.log('Current location:', currentPos);
         setFetchWeather(true); // Set fetchWeather to true to trigger weather data fetching
+        if (autocompleteRef.current) {
+            autocompleteRef.current.setAddressText(''); // Set the value to an empty string
+        }
     };
 
     useEffect(() => {
-        console.log('Weather data:', weatherData);
+        //console.log('Weather data:', weatherData);
     }, [weatherData]);
 
 //<Text style={styles.text}>Weather screen</Text>
     return (
-        <SafeAreaView style={[tw`flex-1`, {backgroundColor: "#FF6F61"}]}>
+        //<SafeAreaView style={[tw`flex-1`, {backgroundColor: "#FF6F61"}]}>
+        <SafeAreaView style={[tw`flex-1 bg-gray-500`]}>
             <GooglePlacesAutocomplete
                 styles={{
                     container: { flex: 0, ...tw`px-5 rounded-lg`},
@@ -95,6 +100,7 @@ const WeatherScreen = () => {
                 }}
                 fetchDetails={true}
                 enablePoweredByContainer={false}
+                ref={autocompleteRef}
                 nearbyPlacesAPI="GooglePlacesSearch"
                 debounce={400}
                 minLength={2}
@@ -115,24 +121,42 @@ const WeatherScreen = () => {
                     }
                     setFetchWeather(true);
                 }}
-                renderLeftButton={ () => (
-                    <TouchableOpacity onPress={handleMyLocationPress}>
-                        <Text>My Location</Text>
-                    </TouchableOpacity>
-                    )}
             />
+            {/*<TouchableOpacity onPress={handleMyLocationPress} style={[tw`bg-white items-center rounded-lg`, styles.locationButton]}/>*/}
+            <TouchableOpacity onPress={handleMyLocationPress} style={[styles.locationButton]}>
+                <View style={tw`flex-row items-center `}>
+                    <Ionicons name={"navigate"} size={20} color={"#FFF"} />
+                    <Text style={{ color: '#FFF', marginLeft: 5 }}>Current location</Text>
+                </View>
+            </TouchableOpacity>
 
-            <View style={styles.weatherContainer}>
-                {weatherData && (
-                    <>
-                        <Text>Name: {weatherData.name}</Text>
-                        <Text>Current temperature: {weatherData.main.temp}°C</Text>
-                        <Text>Max temperature: {weatherData.main.temp_max}°C</Text>
-                        <Text>Min temperature: {weatherData.main.temp_min}°C</Text>
-                        <Text>Feels like: {weatherData.main.feels_like}°C</Text>
-                    </>
+
+
+            {weatherData ? (
+                    <View style={styles.weatherContainer}>
+                        <Text style={styles.text}>{weatherData.name}</Text>
+                        <Text style={styles.text}>{Math.floor(weatherData.main.temp)}°C</Text>
+                        {weatherData.weather.map(weather => (
+                            <View key={weather.id} style={styles.weatherContainer}>
+                                <Text style={styles.text}>{weather.main}</Text>
+                                {/* <Text>Description: {weather.description}</Text>*/}
+                            </View>
+                        ))}
+                        <Image source={{ uri: iconUrl }} style={{ width: 100, height: 100 }} />
+                        <Text>Max temperature: {Math.floor(weatherData.main.temp_max)}°C</Text>
+                        <Text>Min temperature: {Math.floor(weatherData.main.temp_min)}°C</Text>
+                        <Text>Feels like: {Math.floor(weatherData.main.feels_like)}°C</Text>
+                        <Text>Sunrise: {new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</Text>
+                        <Text>Sunset: {new Date(weatherData.sys.sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</Text>
+
+                    </View>
+                ):(
+                    <View style={[tw`items-center`]}>
+                        <Text>Fetching weather...</Text>
+                    </View>
                 )}
-            </View>
+
+
         </SafeAreaView>
     );
 };
@@ -142,10 +166,20 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginVertical: 20,
+        //marginVertical: 20,
     },
     weatherContainer: {
         alignItems: 'center',
+    },
+    locationButton: {
+        position: "absolute",
+        bottom: 20,
+        alignSelf: "center",
+        backgroundColor: "#FF6F61",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        elevation: 5,
     },
 });
 
