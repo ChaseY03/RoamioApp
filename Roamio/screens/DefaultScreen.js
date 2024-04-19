@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {View, StyleSheet, TouchableOpacity, ScrollView, FlatList, SafeAreaView} from 'react-native';
-import { styles } from '../styles/HomeStyle';
+import { styles } from '../styles/CustomStyle';
 import tw from "tailwind-react-native-classnames";
 import Constants from "expo-constants";
 import { Platform } from 'react-native';
@@ -26,10 +26,11 @@ const DefaultScreen = () => {
     const [startLocation, setStartLocation] = useState(null);
     const [guide, setGuide] = useState(false);
     const [userID, setUserID] = useState(null);
+    const autocompleteRef = useRef(null);
 
     const isFocused = useIsFocused();
     useEffect(() => {
-        // Retrieve userID from AsyncStorage
+        // Retrieve userID from AsyncStorage and resets screen to default when clicking back on explore tab
         if (isFocused){
             const retrieveUserID = async () => {
                 try {
@@ -37,14 +38,21 @@ const DefaultScreen = () => {
                     if (storedUserID !== null) {
                         const parsedUserID = JSON.parse(storedUserID);
                         setUserID(parsedUserID);
-                        //console.log(parsedUserID)
+                        console.log(parsedUserID)
                     }
-                    setGuide(false)
+
                 } catch (error) {
                     console.error('Error retrieving userID:', error);
                 }
             };
-
+            // Clear the text in the Google Places Autocomplete search bar
+            if (autocompleteRef.current) {
+                autocompleteRef.current.setAddressText(''); // Set the value to an empty string
+            }
+            setOrigin(currentPos);
+            setDestination(null);
+            setShowSearch(false);
+            setGuide(false);
             retrieveUserID();
         }
     }, [isFocused]);
@@ -110,10 +118,10 @@ const DefaultScreen = () => {
                                     flex: 0,
                                 }
                             }}
+                            ref={autocompleteRef}
                             fetchDetails={true}
                             enablePoweredByContainer={false}
-                            //placeholder="Change starting location"
-                            placeholder="Current location"
+                            placeholder="Change starting location"
                             query={{
                                 key: GOOGLE_API_KEY,
                                 language: "en",
@@ -148,6 +156,7 @@ const DefaultScreen = () => {
                                 fontSize: 16,
                             }
                         }}
+                        ref={autocompleteRef}
                         placeholder={"Where do you want to go?"}
                         query={{
                             key: GOOGLE_API_KEY,

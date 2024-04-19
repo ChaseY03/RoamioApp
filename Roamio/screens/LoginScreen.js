@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, SafeAreaView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Constants from "expo-constants";
 import axios from "axios";
@@ -38,7 +38,7 @@ const LoginScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
                 <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
@@ -51,6 +51,7 @@ const LoginScreen = () => {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                textContentType="oneTimeCode"
             />
             <TextInput
                 style={styles.input}
@@ -59,12 +60,13 @@ const LoginScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
                 autoCapitalize="none"
+                textContentType="oneTimeCode"
             />
             {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
-        </View>
+        </SafeAreaView>
     );
 };
 

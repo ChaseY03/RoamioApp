@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {View, Text, StyleSheet, Button, Dimensions, TouchableOpacity, ScrollView, FlatList} from 'react-native';
-import { styles } from '../styles/HomeStyle';
+import { styles } from '../styles/CustomStyle';
 import Constants from "expo-constants";
 import { Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

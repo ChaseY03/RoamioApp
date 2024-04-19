@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Constants from "expo-constants";
 import { Ionicons } from '@expo/vector-icons';
@@ -46,7 +46,7 @@ const RegisterScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
                 <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
@@ -75,7 +75,7 @@ const RegisterScreen = () => {
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
 
-        </View>
+        </SafeAreaView>
     );
 };
 

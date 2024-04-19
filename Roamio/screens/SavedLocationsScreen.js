@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import {View, Text, StyleSheet, FlatList, SafeAreaView} from 'react-native';
+import tw from "tailwind-react-native-classnames";
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from "@react-navigation/native";
@@ -17,7 +18,7 @@ const SavedLocationsScreen = () => {
                 if (storedUserID !== null) {
                     const parsedUserID = JSON.parse(storedUserID);
                     setUserID(parsedUserID);
-                    //console.log(parsedUserID)
+                    console.log("savedPage id",parsedUserID)
                 }
             } catch (error) {
                 console.error('Error retrieving userID:', error);
@@ -40,14 +41,22 @@ const SavedLocationsScreen = () => {
     );
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.heading}>Saved Locations</Text>
-            <FlatList
-                data={savedLocations}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id.toString()} // Assuming each saved location has a unique id
-            />
-        </View>
+        <SafeAreaView style={styles.container}>
+            {!userID ? (
+                <View style={tw`flex-1 justify-center items-center`}>
+                    <Text>Login to save locations</Text>
+                </View>
+            ) : (
+                <View>
+                <Text style={styles.heading}>Saved Locations</Text>
+                <FlatList
+                    data={savedLocations}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id.toString()} // Assuming each saved location has a unique id
+                />
+                </View>
+            )}
+        </SafeAreaView>
     );
 };
 

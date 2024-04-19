@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, FlatList} from 'react-native';
-import { styles } from '../styles/HomeStyle';
+import { styles } from '../styles/CustomStyle';
 import tw from "tailwind-react-native-classnames";
 import Constants from "expo-constants";
 import { Platform } from 'react-native';
@@ -13,9 +13,26 @@ import MapViewDirections from "react-native-maps-directions";
 import { fetchDirections } from './FetchDirectionsComponent';
 import DirectionsComponent from '../components/DirectionsComponent';
 import {StatusBar} from "expo-status-bar";
+import {useIsFocused} from "@react-navigation/native";
 
 const Map = ({ currentPos, origin, destination }) => {
     const mapRef = useRef(null);
+    const isFocused = useIsFocused();
+    useEffect(() => {
+        // Resets maps back to users current position when they click back to the home/explore page
+        if (isFocused){
+            if (currentPos) {
+                const { latitude, longitude } = currentPos.coords;
+                const region = {
+                    latitude,
+                    longitude,
+                    latitudeDelta: 0.002,
+                    longitudeDelta: 0.002,
+                };
+                mapRef.current.animateToRegion(region, 500);
+            }
+        }
+    }, [isFocused]);
 
     const handleRecenter = () => {
         if (mapRef.current && currentPos) {
@@ -33,7 +50,7 @@ const Map = ({ currentPos, origin, destination }) => {
     useEffect(() => {
         if (!origin || !destination || !mapRef.current) return;
         mapRef.current.fitToSuppliedMarkers(['origin', 'destination'] ,{
-           edgePadding: {top: 50, right: 50, bottom: 50, left: 50},
+            edgePadding: {top: 50, right: 50, bottom: 50, left: 50},
         });
     }, [origin, destination])
 
