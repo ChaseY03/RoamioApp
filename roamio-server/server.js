@@ -137,24 +137,38 @@ app.post('/savelocation', (req, res) => {
 
 });
 
-
 app.get('/savedlocations', async (req, res) => {
     const { userID } = req.query;
 
     try {
-        console.log("fetching saved locations")
-        // Query to fetch saved locations for the provided userID
-        const sql = 'SELECT * FROM usersavedlocation';
-
-        //const result = await db.query(sql, [userID]); // Pass userID as parameter
-        const result = await db.query(sql); // Pass userID as parameter
-        const savedLocations = result.rows;
-
-        res.json({ savedLocations });
-        console.log("locations", result)
+        console.log("fetching saved locations for user with ID:", userID);
+        db.query('SELECT * FROM usersavedlocation WHERE savedlocationUserID = ?', [userID], async (error, results) => {
+            if (error) {
+                console.error('Error loading locations:', error);
+                res.status(500).json({ error: 'Failed' });
+            } else {
+                //console.log("Loaded saved locations");
+                const locations = results.map(row => {
+                    const directions = JSON.parse(row.savedlocationDirections);
+                    return {
+                        savedlocationID: row.savedlocationID,
+                        savedlocationUserID: row.savedlocationUserID,
+                        savedlocationName: row.savedlocationName,
+                        savedlocationOrigin: row.savedlocationOrigin,
+                        savedlocationDestination: row.savedlocationDestination,
+                        savedlocationDirections: row.savedlocationDirections,
+                        savedlocationDistance: row.savedlocationDistance,
+                        savedlocationDuration: row.savedlocationDuration
+                    };
+                });
+                //console.log("locations:", locations);
+                res.status(200).json({ message: 'Success', savedLocations: locations });
+            }
+        });
     } catch (error) {
         console.error('Error fetching saved locations:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 

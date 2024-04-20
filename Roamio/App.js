@@ -18,6 +18,7 @@ const App = () => {
     }, []);
 
     return (
+
         <NavigationContainer>
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

@@ -13,7 +13,7 @@ import MapViewDirections from "react-native-maps-directions";
 import { fetchDirections } from '../components/FetchDirectionsComponent';
 import DirectionsComponent from '../components/DirectionsComponent';
 import {StatusBar} from "expo-status-bar";
-import Map from "../components/Map";
+import MapComponent from "../components/MapComponent";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from "@react-navigation/native";
 
@@ -212,7 +212,7 @@ const DefaultScreen = () => {
                         <Ionicons name={"bicycle"} size={20} />
                     </TouchableOpacity>
                 </View>
-                <Map currentPos={currentPos} origin={origin} destination={destination} />
+                <MapComponent currentPos={currentPos} origin={origin} destination={destination} />
                 {guide && (
                     <DirectionsComponent origin={origin} destination={destination} transportMode={transportMode} userID={userID} />
                 )}

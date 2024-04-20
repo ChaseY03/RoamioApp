@@ -32,7 +32,6 @@ const fetchDirections = async (origin, destination, transportMode) => {
                             lineName: step.transit_details.line.short_name || step.transit_details.line.name,
                             vehicleType: step.transit_details.line.vehicle.type,
                             duration: step.duration.text,
-                            //vehicleType: step.transit_details.line.vehicle.type,
                         };
                     } else {
                         return {

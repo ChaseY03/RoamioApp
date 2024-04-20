@@ -8,7 +8,6 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useIsFocused} from "@react-navigation/native";
 
-//https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={WEATHER_API_KEY}&units=metric
 
 const WeatherScreen = () => {
     const [currentPos, setCurrentPos] = useState(null);
@@ -76,10 +75,6 @@ const WeatherScreen = () => {
             autocompleteRef.current.setAddressText(''); // Set the value to an empty string
         }
     };
-
-    useEffect(() => {
-        //console.log('Weather data:', weatherData);
-    }, [weatherData]);
 
 //<Text style={styles.text}>Weather screen</Text>
     return (
@@ -169,6 +164,7 @@ const styles = StyleSheet.create({
         //marginVertical: 20,
     },
     weatherContainer: {
+        paddingTop:10,
         alignItems: 'center',
     },
     locationButton: {

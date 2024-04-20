@@ -1,12 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import {View, Text, StyleSheet, Button, SafeAreaView} from 'react-native';
+import tw from "tailwind-react-native-classnames";
+import { Ionicons } from '@expo/vector-icons';
+import AttractionsComponent from "../components/AttractionsComponent";
 
 
 const AttractionsScreen = () => {
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>Hello, world!</Text>
-        </View>
+        <SafeAreaView style={tw`flex-1 bg-white`}>
+            <Text style={styles.heading}>Attractions</Text>
+            <AttractionsComponent/>
+        </SafeAreaView>
     );
 };
 
@@ -15,6 +19,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    heading: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        paddingHorizontal: 10,
     },
 });
 

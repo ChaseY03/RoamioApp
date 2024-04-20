@@ -15,7 +15,7 @@ import DirectionsComponent from '../components/DirectionsComponent';
 import {StatusBar} from "expo-status-bar";
 import {useIsFocused} from "@react-navigation/native";
 
-const Map = ({ currentPos, origin, destination }) => {
+const MapComponent = ({ currentPos, origin, destination }) => {
     const mapRef = useRef(null);
     const isFocused = useIsFocused();
     useEffect(() => {
@@ -127,6 +127,6 @@ const Map = ({ currentPos, origin, destination }) => {
     );
 };
 
-export default Map;
+export default MapComponent;
 
 
