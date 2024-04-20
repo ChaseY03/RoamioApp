@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, StyleSheet, TouchableOpacity, ScrollView, FlatList, SafeAreaView} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, ScrollView, FlatList, SafeAreaView, Text} from 'react-native';
 import { styles } from '../styles/CustomStyle';
 import tw from "tailwind-react-native-classnames";
 import Constants from "expo-constants";
@@ -23,6 +23,7 @@ const DefaultScreen = () => {
     const [origin, setOrigin] = useState(null);
     const [destination, setDestination] = useState(null)
     const [showSearch, setShowSearch] = useState(false);
+    const [transportMode, setTransportMode] = useState('driving');
     const [startLocation, setStartLocation] = useState(null);
     const [guide, setGuide] = useState(false);
     const [userID, setUserID] = useState(null);
@@ -90,6 +91,10 @@ const DefaultScreen = () => {
             setOrigin(newOrigin);
         }
     }
+
+    const handleTransportModeChange = (mode) => {
+        setTransportMode(mode);
+    };
 
     useEffect(() => {
         // console.log('Destination updated:', destination);
@@ -181,10 +186,35 @@ const DefaultScreen = () => {
                     />
                 </View>
 
-
+                <View style={styles.transportModeContainer}>
+                    <TouchableOpacity
+                        style={[styles.transportModeButton, transportMode === 'driving' && styles.selectedTransportMode]}
+                        onPress={() => handleTransportModeChange('driving')}
+                    >
+                        <Ionicons name={"car"} size={20} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.transportModeButton, transportMode === 'walking' && styles.selectedTransportMode]}
+                        onPress={() => handleTransportModeChange('walking')}
+                    >
+                        <Ionicons name={"walk"} size={20} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.transportModeButton, transportMode === 'transit' && styles.selectedTransportMode]}
+                        onPress={() => handleTransportModeChange('transit')}
+                    >
+                        <Ionicons name={"train"} size={20} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.transportModeButton, transportMode === 'bicycling' && styles.selectedTransportMode]}
+                        onPress={() => handleTransportModeChange('bicycling')}
+                    >
+                        <Ionicons name={"bicycle"} size={20} />
+                    </TouchableOpacity>
+                </View>
                 <Map currentPos={currentPos} origin={origin} destination={destination} />
                 {guide && (
-                    <DirectionsComponent origin={origin} destination={destination} userID={userID} />
+                    <DirectionsComponent origin={origin} destination={destination} transportMode={transportMode} userID={userID} />
                 )}
             </View>
         </SafeAreaView>

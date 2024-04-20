@@ -6,7 +6,7 @@ import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
 import {Platform} from "react-native";
 
-const DirectionsComponent = ({ origin, destination, loggedIn }) => {
+const DirectionsComponent = ({ origin, destination, transportMode }) => {
     const [directions, setDirections] = useState([]);
     const [distance, setDistance] = useState('');
     const [duration, setDuration] = useState('');
@@ -20,7 +20,7 @@ const DirectionsComponent = ({ origin, destination, loggedIn }) => {
 
     useEffect(() => {
         if (origin && destination) {
-            fetchDirections(origin, destination)
+            fetchDirections(origin, destination, transportMode)
                 .then(data => {
                     if (data) {
                         const { directions, distance, duration } = data;
@@ -40,7 +40,7 @@ const DirectionsComponent = ({ origin, destination, loggedIn }) => {
                     setDuration('');
                 });
         }
-    }, [origin, destination]);
+    }, [origin, destination, transportMode]);
 
     const renderDirectionItem = ({ item }) => {
         return (

@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { GOOGLE_API_KEY } from '@env';
 
-const fetchDirections = async (origin, destination) => {
+const fetchDirections = async (origin, destination, transportMode) => {
     try {
         // Convert origin and destination objects to strings
         const originStr = `${origin.coords.latitude},${origin.coords.longitude}`;
         const destinationStr = `${destination.location.lat},${destination.location.lng}`;
         const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destinationStr}&key=${GOOGLE_API_KEY}`
+            `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destinationStr}&mode=${transportMode}&key=${GOOGLE_API_KEY}`
         );
         if (response.data.status === 'OK') {
             //const steps = response.data.routes[0].legs[0].steps.map(step => ({

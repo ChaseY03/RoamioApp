@@ -92,6 +92,20 @@ export const styles = StyleSheet.create({
         borderRadius: 10,
         elevation: 5,
     },
+    transportModeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        marginBottom: 20,
+    },
+    transportModeButton: {
+        backgroundColor: '#DDDDDD',
+        padding: 10,
+        borderRadius: 5,
+    },
+    selectedTransportMode: {
+        backgroundColor: '#FF6F61',
+    },
 });
 
 
