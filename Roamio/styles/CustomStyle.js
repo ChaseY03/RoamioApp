@@ -106,6 +106,7 @@ export const styles = StyleSheet.create({
     selectedTransportMode: {
         backgroundColor: '#FF6F61',
     },
+
 });
 
 

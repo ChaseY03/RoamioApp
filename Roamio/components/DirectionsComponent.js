@@ -4,7 +4,7 @@ import { fetchDirections } from './FetchDirectionsComponent';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
-import {Platform} from "react-native";
+import { Platform } from "react-native";
 
 const DirectionsComponent = ({ origin, destination, transportMode }) => {
     const [directions, setDirections] = useState([]);
@@ -13,6 +13,7 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
     const [saveMode, setSaveMode] = useState(false);
     const [saveName, setSaveName] = useState('');
     const [userID, setUserID] = useState(null); // State to hold the retrieved userID
+    const [stops, setStops] = useState([]);
 
     useEffect(() => {
         retrieveUserID(); // Retrieve userID when the component mounts
@@ -23,14 +24,16 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
             fetchDirections(origin, destination, transportMode)
                 .then(data => {
                     if (data) {
-                        const { directions, distance, duration } = data;
+                        const { directions, distance, duration, stops } = data;
                         setDirections(directions);
                         setDistance(distance);
                         setDuration(duration);
+                        setStops(stops);
                     } else {
                         setDirections([]);
                         setDistance('');
                         setDuration('');
+                        setStops([]);
                     }
                 })
                 .catch(error => {
@@ -38,6 +41,7 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
                     setDirections([]);
                     setDistance('');
                     setDuration('');
+                    setStops([]);
                 });
         }
     }, [origin, destination, transportMode]);
@@ -46,8 +50,22 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
         return (
             <View style={styles.stepContainer}>
                 <Text style={styles.stepInstruction}>{item.instructions}</Text>
-                <Text style={styles.stepDistance}>{item.distance}</Text>
-                <Text style={styles.stepDuration}>{item.duration}</Text>
+                <Text style={styles.stepInfo}>{item.distance}</Text>
+                <Text style={styles.stepInfo}>{item.duration}</Text>
+            </View>
+        );
+    };
+
+    const renderStopItem = (stop, index) => {
+        const vehicleType = stop.vehicleType;
+        const lineInfo = vehicleType === 'BUS' ? `Bus number: ${stop.lineName}` : `Line: ${stop.lineName}`;
+        return (
+            <View style={styles.stepContainer} key={index}>
+                <Text style={styles.stepInstruction}>Stop {index + 1}</Text>
+                <Text style={styles.stepInstruction}>Get on at: {stop.departureStop}</Text>
+                <Text style={styles.stepInstruction}>Get off at: {stop.arrivalStop}</Text>
+                <Text style={styles.stepLine}>{lineInfo}</Text>
+                <Text style={styles.stepInfo}>{stop.duration}</Text>
             </View>
         );
     };
@@ -66,7 +84,6 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
             console.error('Error retrieving userID:', error);
         }
     };
-
 
     const toggleSaveMenu = async () => {
         setSaveMode(true);
@@ -102,7 +119,7 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, transportMode === 'transit' && styles.transitContainer]}>
             {userID && !saveMode ? (
                 <TouchableOpacity style={styles.saveButton} onPress={toggleSaveMenu}>
                     <Ionicons name="bookmark" size={20} color="#FFF" />
@@ -132,6 +149,14 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
                             <View key={index}>{renderDirectionItem({ item: step })}</View>
                         ))}
                     </ScrollView>
+                    {transportMode === 'transit' && (
+                        <>
+                            <Text style={styles.heading}>Transit information:</Text>
+                            <ScrollView style={styles.scrollView}>
+                                {stops.map((stop, index) => renderStopItem(stop, index))}
+                            </ScrollView>
+                        </>
+                    )}
                 </>
             )}
         </View>
@@ -163,11 +188,11 @@ const styles = StyleSheet.create({
     stepInstruction: {
         fontSize: 16,
     },
-    stepDistance: {
+    stepInfo: {
         color: 'gray',
     },
-    stepDuration: {
-        color: 'gray',
+    stepLine:{
+        color: 'red'
     },
     scrollView: {
         maxHeight: 150,
