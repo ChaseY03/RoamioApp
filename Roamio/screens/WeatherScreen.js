@@ -23,8 +23,8 @@ const WeatherScreen = () => {
     const iconUrl = (icon) => `https://openweathermap.org/img/wn/${icon}@4x.png`;
 
     useEffect(() => {
-        console.log("currentWeatherData:", currentWeatherData);
-        console.log("forecastData:", forecastData);
+       // console.log("currentWeatherData:", currentWeatherData);
+      //  console.log("forecastData:", forecastData);
     }, [currentWeatherData, forecastData]);
 
     useEffect(() => {
@@ -116,7 +116,10 @@ const WeatherScreen = () => {
             const forecastDate = new Date(forecast.dt * 1000);
             const date = forecastDate.toLocaleDateString();
             let day;
-            if (forecastDate.getDate() === today.getDate() + 1) {
+            if (forecastDate.getDate() === today.getDate()) {
+                day = "Today";
+            }
+            else if (forecastDate.getDate() === today.getDate() + 1) {
                 day = "Tomorrow";
             } else {
                 day = forecastDate.toLocaleDateString('en', { weekday: 'long' });
@@ -225,15 +228,16 @@ const WeatherScreen = () => {
                             <Text>Sunset: {new Date(currentWeatherData.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                         </View>
 
-                        {/*Current day forecast view*/}
+                        {/*Current day forecast view
                         <View style={styles.forecastContainer}>
                             <Text style={styles.forecastText}>Todays Forecast</Text>
                             {formatHourlyForecastData().map((hourlyForecasts) => renderHourlyForecast(hourlyForecasts))}
-                        </View>
+                        </View>*/}
 
-                        {/*Next days forecast view*/}
+
+                        {/*Forecast view*/}
                         <View style={styles.forecastContainer}>
-                            <Text style={styles.forecastText}>5-day Forecast</Text>
+                            <Text style={styles.forecastText}>Forecast</Text>
                             {formatNextDaysForecastData().map((forecast) => renderNextDaysForecast(forecast))}
                         </View>
                     </ScrollView>
