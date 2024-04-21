@@ -1,36 +1,23 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, Platform} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, Platform } from 'react-native';
 import tw from "tailwind-react-native-classnames";
 import { Ionicons } from '@expo/vector-icons';
-import {WEATHER_API_KEY, GOOGLE_API_KEY} from '@env';
+import { WEATHER_API_KEY, GOOGLE_API_KEY } from '@env';
 import * as Location from 'expo-location';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import {useIsFocused} from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 import Constants from "expo-constants";
-
 
 const WeatherScreen = () => {
     const [currentPos, setCurrentPos] = useState(null);
     const [initialFetch, setInitialFetch] = useState(false);
     const [fetchWeather, setFetchWeather] = useState(false);
     const [location, setLocation] = useState(null);
+    const [iconUrl, setIconUrl] = useState(null);
     const [weatherData, setWeatherData] = useState(null);
     const autocompleteRef = useRef(null);
 
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${location?.latitude}&lon=${location?.longitude}&appid=${WEATHER_API_KEY}&units=metric`;
-    const iconUrl = `https://openweathermap.org/img/wn/${weatherData?.weather[0].icon}@4x.png`;
-
     const isFocused = useIsFocused();
-    useEffect(() => {
-        // Resets when user clicks on weather screen tab
-        if (isFocused) {
-            handleMyLocationPress();
-            if (autocompleteRef.current) {
-                autocompleteRef.current.setAddressText(''); // Set the value to an empty string
-            }
-        }
-    }, [isFocused]);
-
 
     useEffect(() => {
         const getLocation = async () => {
@@ -40,53 +27,65 @@ const WeatherScreen = () => {
                 return;
             }
 
-            let currentUserPosition = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.High});
-            setCurrentPos(currentUserPosition);
-            setLocation(currentUserPosition.coords);
+            let currentUserPosition = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+            setCurrentPos(currentUserPosition); // Update current position
+            setLocation(currentUserPosition.coords); // Update location
         };
-        getLocation();
 
+        if (isFocused && !currentPos) { // Fetch location only when focused and currentPos is null
+            getLocation();
+        }
+    }, [isFocused, currentPos]);
+
+    useEffect(() => {
+        if (currentPos) { // Fetch weather data only when currentPos is available
+            setFetchWeather(true);
+        }
     }, [currentPos]);
 
-
-    // Effect to fetch weather data when location changes
     useEffect(() => {
         const fetchWeatherData = async () => {
             try {
+                const url = `https://api.openweathermap.org/data/2.5/weather?lat=${location?.latitude}&lon=${location?.longitude}&appid=${WEATHER_API_KEY}&units=metric`;
                 const response = await fetch(url);
                 const data = await response.json();
                 setWeatherData(data);
                 setInitialFetch(true);
+
+                // Define iconUrl here when weatherData is available
+                const iconUrl = data.weather ? `https://openweathermap.org/img/wn/${data.weather[0]?.icon}@4x.png` : null;
+                setIconUrl(iconUrl);
             } catch (error) {
                 console.error('Error fetching weather data:', error);
             }
         };
 
-        if (location && (!initialFetch || initialFetch && fetchWeather)) {
+        if (location && (!initialFetch || (initialFetch && fetchWeather))) {
             fetchWeatherData();
-            setFetchWeather(false); // Reset fetchWeather to false after fetching
+            setFetchWeather(false);
         }
-    }, [location, initialFetch, fetchWeather, weatherData]);
+    }, [location, initialFetch, fetchWeather]);
 
-    // Handle press event for My Location button
+
     const handleMyLocationPress = () => {
-        setFetchWeather(true); // Set fetchWeather to true to trigger weather data fetching
+        setCurrentPos(null); // Reset currentPos to trigger location update
+        setWeatherData(null); // Reset weather data
+        setInitialFetch(false); // Reset initial fetch
+        setFetchWeather(true); // Trigger weather fetch
         if (autocompleteRef.current) {
-            autocompleteRef.current.setAddressText(''); // Set the value to an empty string
+            autocompleteRef.current.setAddressText('');
         }
     };
 
-//<Text style={styles.text}>Weather screen</Text>
     return (
-        //<SafeAreaView style={[tw`flex-1`, {backgroundColor: "#FF6F61"}]}>
         <SafeAreaView style={[tw`flex-1 bg-gray-300`, Platform.OS === 'android' && { paddingTop: Constants.statusBarHeight }]}>
             <View style={tw`flex-1`}>
                 <View style={styles.autocompleteContainer}>
                     <GooglePlacesAutocomplete
                         styles={{
-                            container: { flex: 0, ...tw`px-5 rounded-lg`},
+                            container: { flex: 0, ...tw`px-5 rounded-lg` },
                             textInput: { fontSize: 16, ...tw` rounded-lg justify-end items-center` },
-                            listView: {...tw`rounded-lg`},
+                            listView: { ...tw`rounded-lg` },
                         }}
                         placeholder={"Search for a city"}
                         query={{
@@ -101,8 +100,8 @@ const WeatherScreen = () => {
                         debounce={400}
                         minLength={2}
                         onPress={(data, details = null) => {
-                            //console.log('Selected location:', details);
                             if (data.description === "My Location") {
+                                setCurrentPos(null); // Reset currentPos to trigger location update
                                 setLocation({
                                     name: "My Location",
                                     latitude: currentPos.coords.latitude,
@@ -119,15 +118,12 @@ const WeatherScreen = () => {
                         }}
                     />
                 </View>
-                {/*<TouchableOpacity onPress={handleMyLocationPress} style={[tw`bg-white items-center rounded-lg`, styles.locationButton]}/>*/}
                 <TouchableOpacity onPress={handleMyLocationPress} style={[styles.locationButton]}>
                     <View style={tw`flex-row items-center `}>
                         <Ionicons name={"navigate"} size={20} color={"#000"} />
                         <Text style={{ color: '#000', marginLeft: 5 }}>Current location</Text>
                     </View>
                 </TouchableOpacity>
-
-
                 {weatherData ? (
                     <View style={styles.weatherContainer}>
                         <Text style={styles.text}>{weatherData.name}</Text>
@@ -135,19 +131,16 @@ const WeatherScreen = () => {
                         {weatherData.weather.map(weather => (
                             <View key={weather.id}>
                                 <Text style={styles.text}>{weather.main}</Text>
-                                {/* <Text>Description: {weather.description}</Text>*/}
                                 <Image source={{ uri: iconUrl }} style={{ width: 100, height: 100 }} />
                             </View>
-
                         ))}
                         <Text>Max temperature: {Math.floor(weatherData.main.temp_max)}°C</Text>
                         <Text>Min temperature: {Math.floor(weatherData.main.temp_min)}°C</Text>
                         <Text>Feels like: {Math.floor(weatherData.main.feels_like)}°C</Text>
-                        <Text>Sunrise: {new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</Text>
-                        <Text>Sunset: {new Date(weatherData.sys.sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</Text>
-
+                        <Text>Sunrise: {new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                        <Text>Sunset: {new Date(weatherData.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                     </View>
-                ):(
+                ) : (
                     <View style={[tw`flex-1 items-center my-20`]}>
                         <Text>Fetching weather...</Text>
                     </View>
@@ -156,25 +149,20 @@ const WeatherScreen = () => {
         </SafeAreaView>
     );
 };
-//{weatherData && currentPos &&(
+
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 10,
-        paddingBottom: 20, // Add padding bottom to avoid the last item being hidden by the bottom navigation bar
+        paddingBottom: 20,
     },
     text: {
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        //marginVertical: 20,
     },
     weatherContainer: {
-        //backgroundColor: "#FF6F61",
-        //paddingTop:10,
+        marginTop: 60,
         alignItems: 'center',
-        //alignSelf: "center"
-        marginTop:60,
-
     },
     autocompleteContainer: {
         position: 'absolute',

@@ -59,7 +59,7 @@ const DefaultScreen = () => {
     }, [isFocused]);
 
     useEffect(() => {
-        (async () => {
+        const getLocation = async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 //setErrorMsg('Permission to access location was denied');
@@ -77,7 +77,10 @@ const DefaultScreen = () => {
             setCurrentPos(location)
             setOrigin(location);
             //console.log(location)
-        })();
+        };
+        if (!currentPos) {
+            getLocation();
+        }
     }, []);
 
     const handleNewOrigin = (data, details = null) => {
@@ -95,16 +98,6 @@ const DefaultScreen = () => {
     const handleTransportModeChange = (mode) => {
         setTransportMode(mode);
     };
-
-    useEffect(() => {
-        // console.log('Destination updated:', destination);
-    }, [destination]);
-    useEffect(() => {
-        // console.log('Origin updated:', origin);
-    }, [origin]);
-    useEffect(() => {
-        // console.log('Current pos updated:', currentPos);
-    }, [currentPos]);
 
     return(
         <SafeAreaView style={[tw`h-full bg-white`, Platform.OS === 'android' && { paddingTop: Constants.statusBarHeight }]}>

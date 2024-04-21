@@ -3,17 +3,7 @@ import {View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, 
 import { fetchAttractions } from './FetchAttractionsComponent';
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
-import * as PropTypes from "prop-types";
 
-function WebView(props) {
-    return null;
-}
-
-WebView.propTypes = {
-    originWhitelist: PropTypes.arrayOf(PropTypes.string),
-    style: PropTypes.any,
-    source: PropTypes.shape({html: PropTypes.any})
-};
 const AttractionsComponent = ({ attractions }) => {
     //console.log("ATTRACTIONS:", attractions);
 
