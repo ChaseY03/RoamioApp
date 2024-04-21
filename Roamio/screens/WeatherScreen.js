@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, Platform, ScrollView } from 'react-native';
 import tw from "tailwind-react-native-classnames";
 import { Ionicons } from '@expo/vector-icons';
 import { WEATHER_API_KEY, GOOGLE_API_KEY } from '@env';
@@ -13,11 +13,19 @@ const WeatherScreen = () => {
     const [initialFetch, setInitialFetch] = useState(false);
     const [fetchWeather, setFetchWeather] = useState(false);
     const [location, setLocation] = useState(null);
-    const [iconUrl, setIconUrl] = useState(null);
-    const [weatherData, setWeatherData] = useState(null);
+    const [currentWeatherData, setCurrentWeatherData] = useState(null);
+    const [forecastData, setForecastData] = useState(null);
     const autocompleteRef = useRef(null);
-
     const isFocused = useIsFocused();
+
+    const currentWeatherurl = `https://api.openweathermap.org/data/2.5/weather?lat=${location?.latitude}&lon=${location?.longitude}&appid=${WEATHER_API_KEY}&units=metric`;
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${location?.latitude}&lon=${location?.longitude}&appid=${WEATHER_API_KEY}&units=metric`;
+    const iconUrl = (icon) => `https://openweathermap.org/img/wn/${icon}@4x.png`;
+
+    useEffect(() => {
+        console.log("currentWeatherData:", currentWeatherData);
+        console.log("forecastData:", forecastData);
+    }, [currentWeatherData, forecastData]);
 
     useEffect(() => {
         const getLocation = async () => {
@@ -46,30 +54,110 @@ const WeatherScreen = () => {
     useEffect(() => {
         const fetchWeatherData = async () => {
             try {
-                const url = `https://api.openweathermap.org/data/2.5/weather?lat=${location?.latitude}&lon=${location?.longitude}&appid=${WEATHER_API_KEY}&units=metric`;
-                const response = await fetch(url);
+                const response = await fetch(currentWeatherurl);
                 const data = await response.json();
-                setWeatherData(data);
+                setCurrentWeatherData(data);
                 setInitialFetch(true);
-
-                // Define iconUrl here when weatherData is available
-                const iconUrl = data.weather ? `https://openweathermap.org/img/wn/${data.weather[0]?.icon}@4x.png` : null;
-                setIconUrl(iconUrl);
             } catch (error) {
                 console.error('Error fetching weather data:', error);
             }
         };
 
+        const fetchForecastData = async () => {
+            try {
+                const response = await fetch(forecastUrl);
+                const data = await response.json();
+                setForecastData(data);
+            } catch (error) {
+                console.error('Error fetching forecast data:', error);
+            }
+        };
+
         if (location && (!initialFetch || (initialFetch && fetchWeather))) {
             fetchWeatherData();
+            fetchForecastData();
             setFetchWeather(false);
         }
     }, [location, initialFetch, fetchWeather]);
 
+    const formatHourlyForecastData = () => {
+        if (!forecastData || !forecastData.list) return [];
+        const hourlyForecasts = {};
+        const today = new Date();
+        forecastData.list.forEach((forecast) => {
+            const forecastDate = new Date(forecast.dt * 1000);
+            if (forecastDate.getDate() === today.getDate()) {
+                const time = forecastDate.toLocaleTimeString([], { hour: 'numeric', hour12: true });
+                hourlyForecasts[time] = {
+                    time,
+                    temperature: Math.floor(forecast.main.temp),
+                    icon: forecast.weather[0].icon,
+                };
+            }
+        });
+        return Object.values(hourlyForecasts);
+    };
+
+    const renderHourlyForecast = (hourlyForecasts) => {
+        return (
+            <View key={hourlyForecasts.time} style={styles.forecastItem}>
+                <Text>{hourlyForecasts.time}</Text>
+                <Image source={{ uri: iconUrl(hourlyForecasts.icon) }} style={styles.weatherIcon} />
+                <Text>{hourlyForecasts.temperature}°C</Text>
+            </View>
+        );
+    };
+
+    const formatNextDaysForecastData = () => {
+        if (!forecastData || !forecastData.list) return [];
+        const dailyForecasts = {};
+        const today = new Date();
+        forecastData.list.forEach((forecast) => {
+            const forecastDate = new Date(forecast.dt * 1000);
+            const date = forecastDate.toLocaleDateString();
+            let day;
+            if (forecastDate.getDate() === today.getDate() + 1) {
+                day = "Tomorrow";
+            } else {
+                day = forecastDate.toLocaleDateString('en', { weekday: 'long' });
+            }
+            if (!dailyForecasts[date]) {
+                dailyForecasts[date] = {
+                    date: day,
+                    forecasts: [],
+                };
+            }
+            const time = forecastDate.toLocaleTimeString([], { hour: 'numeric', hour12: true });
+            dailyForecasts[date].forecasts.push({
+                time: time.toLowerCase(),
+                temperature: Math.floor(forecast.main.temp),
+                icon: forecast.weather[0].icon,
+            });
+        });
+        return Object.values(dailyForecasts);
+    };
+
+    const renderNextDaysForecast = (forecast) => {
+        return (
+            <View key={forecast.date} style={styles.forecastContainer}>
+                <Text style={styles.dateText}>{forecast.date}</Text>
+                <View style={styles.forecastItemContainer}>
+                    {forecast.forecasts.map((item, index) => (
+                        <View key={index} style={styles.forecastItem}>
+                            <Text>{item.time}</Text>
+                            <Image source={{ uri: iconUrl(item.icon) }} style={styles.weatherIcon} />
+                            <Text>{item.temperature}°C</Text>
+                        </View>
+                    ))}
+                </View>
+            </View>
+        );
+    };
 
     const handleMyLocationPress = () => {
         setCurrentPos(null); // Reset currentPos to trigger location update
-        setWeatherData(null); // Reset weather data
+        setCurrentWeatherData(null); // Reset weather data
+        setForecastData(null); // Reset forecast data
         setInitialFetch(false); // Reset initial fetch
         setFetchWeather(true); // Trigger weather fetch
         if (autocompleteRef.current) {
@@ -118,34 +206,49 @@ const WeatherScreen = () => {
                         }}
                     />
                 </View>
-                <TouchableOpacity onPress={handleMyLocationPress} style={[styles.locationButton]}>
-                    <View style={tw`flex-row items-center `}>
-                        <Ionicons name={"navigate"} size={20} color={"#000"} />
-                        <Text style={{ color: '#000', marginLeft: 5 }}>Current location</Text>
-                    </View>
-                </TouchableOpacity>
-                {weatherData ? (
-                    <View style={styles.weatherContainer}>
-                        <Text style={styles.text}>{weatherData.name}</Text>
-                        <Text style={styles.text}>{Math.floor(weatherData.main.temp)}°C</Text>
-                        {weatherData.weather.map(weather => (
-                            <View key={weather.id}>
-                                <Text style={styles.text}>{weather.main}</Text>
-                                <Image source={{ uri: iconUrl }} style={{ width: 100, height: 100 }} />
-                            </View>
-                        ))}
-                        <Text>Max temperature: {Math.floor(weatherData.main.temp_max)}°C</Text>
-                        <Text>Min temperature: {Math.floor(weatherData.main.temp_min)}°C</Text>
-                        <Text>Feels like: {Math.floor(weatherData.main.feels_like)}°C</Text>
-                        <Text>Sunrise: {new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-                        <Text>Sunset: {new Date(weatherData.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-                    </View>
+
+                {currentWeatherData && forecastData ? (
+                    <ScrollView style={styles.weatherContainer}>
+                        <View style={styles.currenWeatherContainer}>
+                            <Text style={styles.text}>{currentWeatherData.name}</Text>
+                            <Text style={styles.text}>{Math.floor(currentWeatherData.main.temp)}°C</Text>
+                            {currentWeatherData.weather.map(weather => (
+                                <View key={weather.id}>
+                                    <Text style={styles.text}>{weather.main}</Text>
+                                    <Image source={{ uri: iconUrl(weather.icon) }} style={{ width: 100, height: 100 }} />
+                                </View>
+                            ))}
+                            <Text>Max temperature: {Math.floor(currentWeatherData.main.temp_max)}°C</Text>
+                            <Text>Min temperature: {Math.floor(currentWeatherData.main.temp_min)}°C</Text>
+                            <Text>Feels like: {Math.floor(currentWeatherData.main.feels_like)}°C</Text>
+                            <Text>Sunrise: {new Date(currentWeatherData.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                            <Text>Sunset: {new Date(currentWeatherData.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                        </View>
+
+                        {/*Current day forecast view*/}
+                        <View style={styles.forecastContainer}>
+                            <Text style={styles.forecastText}>Todays Forecast</Text>
+                            {formatHourlyForecastData().map((hourlyForecasts) => renderHourlyForecast(hourlyForecasts))}
+                        </View>
+
+                        {/*Next days forecast view*/}
+                        <View style={styles.forecastContainer}>
+                            <Text style={styles.forecastText}>5-day Forecast</Text>
+                            {formatNextDaysForecastData().map((forecast) => renderNextDaysForecast(forecast))}
+                        </View>
+                    </ScrollView>
                 ) : (
                     <View style={[tw`flex-1 items-center my-20`]}>
                         <Text>Fetching weather...</Text>
                     </View>
                 )}
             </View>
+            <TouchableOpacity onPress={handleMyLocationPress} style={[styles.locationButton]}>
+                <View style={tw`flex-row items-center `}>
+                    <Ionicons name={"navigate"} size={20} color={"#000"} />
+                    <Text style={{ color: '#000', marginLeft: 5 }}>Current location</Text>
+                </View>
+            </TouchableOpacity>
         </SafeAreaView>
     );
 };
@@ -161,8 +264,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     weatherContainer: {
-        marginTop: 60,
-        alignItems: 'center',
+        marginVertical: 65,
     },
     autocompleteContainer: {
         position: 'absolute',
@@ -181,6 +283,34 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 10,
         elevation: 5,
+    },
+    currenWeatherContainer: {
+        alignItems: 'center',
+    },
+    forecastContainer: {
+        marginBottom: 20,
+        paddingHorizontal: 10,
+    },
+    forecastText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    dateText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    forecastItemContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+    },
+    forecastItem: {
+        alignItems: 'center',
+    },
+    weatherIcon: {
+        width: 50,
+        height: 50,
     },
 });
 
