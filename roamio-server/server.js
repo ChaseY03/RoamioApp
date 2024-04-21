@@ -93,7 +93,9 @@ app.post('/register', (req, res) => {
             }
 
             loggedIn = true;
-             res.status(201).json({ status: "Success" , message: 'User registered successfully' });
+             //res.status(201).json({ status: "Success" , message: 'User registered successfully' });
+            const userID = results.insertId; // Get the userID of the newly inserted user
+            res.status(201).json({ status: "Success", userID: userID, message: 'User registered successfully' });
         });
     });
 });
@@ -141,7 +143,7 @@ app.get('/savedlocations', async (req, res) => {
     const { userID } = req.query;
 
     try {
-        console.log("fetching saved locations for user with ID:", userID);
+        //console.log("fetching saved locations for user with ID:", userID);
         db.query('SELECT * FROM usersavedlocation WHERE savedlocationUserID = ?', [userID], async (error, results) => {
             if (error) {
                 console.error('Error loading locations:', error);

@@ -9,8 +9,8 @@ import { Ionicons } from "@expo/vector-icons";
 const SavedLocationsScreen = () => {
     const [savedLocations, setSavedLocations] = useState([]);
     const [userID, setUserID] = useState(null);
-    const [tripName, setTripName] = useState(null);
-    const [tripDetails, setTripDetails] = useState(null);
+    const [trip, setTrip] = useState(null);
+    const [tripDirections, setTripDirections] = useState(null);
     const [showInformation, setShowInformation] = useState(false);
 
     const isFocused = useIsFocused();
@@ -66,8 +66,8 @@ const SavedLocationsScreen = () => {
 
     const handleShowTrip = (item) => {
         setShowInformation(true);
-        setTripName(item.savedlocationName);
-        setTripDetails(JSON.parse(item.savedlocationDirections));
+        setTrip(item);
+        setTripDirections(JSON.parse(item.savedlocationDirections));
     };
 
     return (
@@ -87,10 +87,14 @@ const SavedLocationsScreen = () => {
                     </View>
                     {showInformation && (
                         <View style={styles.informationContainer}>
-                            <Text style={styles.heading}>Directions to: {tripName}</Text>
-                            <ScrollView style={styles.scrollViewContent}>
-                                {tripDetails && (
-                                    tripDetails.map((step, index) => (
+                            <Text style={styles.heading}>Directions to: {trip.savedlocationName}</Text>
+                            <View style={styles.infoContainer}>
+                            <Text style={styles.infoText}>Distance: {trip.savedlocationDistance}</Text>
+                            <Text style={styles.infoText}>Duration: {trip.savedlocationDuration}</Text>
+                            </View>
+                            <ScrollView>
+                                {tripDirections && (
+                                    tripDirections.map((step, index) => (
                                         <View key={index} style={styles.stepContainer}>
                                             <Text style={styles.stepInstruction}>{step.instructions}</Text>
                                             <Text style={styles.stepInfo}>Distance: {step.distance}</Text>
@@ -131,10 +135,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     locationsContainer: {
-        flex: 1,
-    },
-    scrollViewContent: {
-        //maxHeight: 150,
+        flex: 1.5,
     },
     informationContainer: {
         borderTopWidth: 1,
@@ -154,6 +155,15 @@ const styles = StyleSheet.create({
     stepInfo: {
         color: 'gray',
         marginLeft: 10,
+    },
+    infoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding:10,
+    },
+    infoText: {
+        fontSize: 16,
+        color: '#333',
     },
 });
 

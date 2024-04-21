@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import Constants from "expo-constants";
 import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const RegisterScreen = () => {
     const navigation = useNavigation();
 
@@ -28,7 +29,9 @@ const RegisterScreen = () => {
             });
             if (response.data.status === "Success") {
                 console.log('Registration success')
-                navigation.navigate('AccountStack');
+                const userID = response.data.userID;
+                await AsyncStorage.setItem('userID', JSON.stringify(userID));
+                navigation.navigate('AccountStack', { userID });
             } else if (response.data.status === "Fail"){
                 console.log('Failed to register')
                 setErrorMessage("Please enter all details");
