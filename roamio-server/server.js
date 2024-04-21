@@ -125,9 +125,9 @@ app.get('/logout', (req, res) => {
 
 app.post('/savelocation', (req, res) => {
     // Extract route data from the request body
-    const { userID, locationName, origin, destination, directions, distance, duration } = req.body;
+    const { userID, locationName, origin, destination, directions, distance, duration, note } = req.body;
     // Insert the route data into the database
-    db.query('INSERT INTO usersavedlocation (savedlocationUserID, savedlocationName, savedlocationOrigin, savedlocationDestination, savedlocationDirections, savedlocationDistance, savedlocationDuration) VALUES (?, ?, ?, ?, ?, ?, ?)', [userID, locationName, origin.toString(), destination.toString(), JSON.stringify(directions), distance, duration], (error, results) => {
+    db.query('INSERT INTO usersavedlocation (savedlocationUserID, savedlocationName, savedlocationOrigin, savedlocationDestination, savedlocationDirections, savedlocationDistance, savedlocationDuration, savedlocationNote) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [userID, locationName, origin.toString(), destination.toString(), JSON.stringify(directions), distance, duration, note], (error, results) => {
         if (error) {
             console.error('Error saving route:', error);
             res.status(500).json({ error: 'Failed to save route' });
@@ -160,7 +160,8 @@ app.get('/savedlocations', async (req, res) => {
                         savedlocationDestination: row.savedlocationDestination,
                         savedlocationDirections: row.savedlocationDirections,
                         savedlocationDistance: row.savedlocationDistance,
-                        savedlocationDuration: row.savedlocationDuration
+                        savedlocationDuration: row.savedlocationDuration,
+                        savedlocationNote: row.savedlocationNote,
                     };
                 });
                 //console.log("locations:", locations);

@@ -12,6 +12,7 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
     const [duration, setDuration] = useState('');
     const [saveMode, setSaveMode] = useState(false);
     const [saveName, setSaveName] = useState('');
+    const [note, setNote] = useState('');
     const [userID, setUserID] = useState(null); // State to hold the retrieved userID
     const [stops, setStops] = useState([]);
 
@@ -109,9 +110,11 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
                 directions: directions,
                 distance: distance,
                 duration: duration,
+                note: note, // Include the note field here
             });
             setSaveMode(false); // Hide the save menu screen
             setSaveName('');
+            setNote('');
             Alert.alert("Location saved", "Now viewable in your saved locations");
         } catch (error) {
             console.error('Error saving route:', error);
@@ -119,7 +122,7 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
     };
 
     return (
-        <View style={[styles.container, transportMode === 'transit' && styles.transitContainer]}>
+        <View style={[styles.container, transportMode === 'transit']}>
             {userID && !saveMode ? (
                 <TouchableOpacity style={styles.saveButton} onPress={toggleSaveMenu}>
                     <Ionicons name="bookmark" size={20} color="#FFF" />
@@ -132,6 +135,12 @@ const DirectionsComponent = ({ origin, destination, transportMode }) => {
                         placeholder="Save a trip name"
                         value={saveName}
                         onChangeText={setSaveName}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Add a note?"
+                        value={note}
+                        onChangeText={setNote}
                     />
                     <TouchableOpacity style={styles.saveButton} onPress={handleSaveRoute}>
                         <Ionicons name="bookmark" size={20} color="#FFF" />

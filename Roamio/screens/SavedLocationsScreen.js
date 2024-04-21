@@ -92,6 +92,9 @@ const SavedLocationsScreen = () => {
                             <Text style={styles.infoText}>Distance: {trip.savedlocationDistance}</Text>
                             <Text style={styles.infoText}>Duration: {trip.savedlocationDuration}</Text>
                             </View>
+                            {trip.savedlocationNote && ( // render the note text if it exists
+                                <Text style={styles.infoNote}>Note: {trip.savedlocationNote}</Text>
+                            )}
                             <ScrollView>
                                 {tripDirections && (
                                     tripDirections.map((step, index) => (
@@ -165,6 +168,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
     },
+    infoNote: {
+        paddingHorizontal:10,
+        paddingBottom:10,
+        fontSize: 16,
+        color: '#333',
+    }
 });
 
 export default SavedLocationsScreen;
