@@ -5,6 +5,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import Constants from "expo-constants";
 
 const SavedLocationsScreen = () => {
     const [savedLocations, setSavedLocations] = useState([]);
@@ -71,7 +72,7 @@ const SavedLocationsScreen = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, Platform.OS === 'android' && { paddingTop: Constants.statusBarHeight }]}>
             {userID ? (
                 <KeyboardAvoidingView
                     style={{ flex: 1 }}
@@ -162,7 +163,8 @@ const styles = StyleSheet.create({
     infoContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        padding:10,
+        paddingHorizontal:10,
+        paddingBottom:10,
     },
     infoText: {
         fontSize: 16,

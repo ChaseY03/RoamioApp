@@ -1,12 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image} from 'react-native';
+import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, Platform} from 'react-native';
 import tw from "tailwind-react-native-classnames";
 import { Ionicons } from '@expo/vector-icons';
 import {WEATHER_API_KEY, GOOGLE_API_KEY} from '@env';
 import * as Location from 'expo-location';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useIsFocused} from "@react-navigation/native";
+import Constants from "expo-constants";
 
 
 const WeatherScreen = () => {
@@ -79,65 +79,67 @@ const WeatherScreen = () => {
 //<Text style={styles.text}>Weather screen</Text>
     return (
         //<SafeAreaView style={[tw`flex-1`, {backgroundColor: "#FF6F61"}]}>
-        <SafeAreaView style={[tw`flex-1 bg-gray-500`]}>
-            <GooglePlacesAutocomplete
-                styles={{
-                    container: { flex: 0, ...tw`px-5 rounded-lg`},
-                    textInput: { fontSize: 16, ...tw` rounded-lg justify-end items-center` },
-                    listView: {...tw`rounded-lg`},
-                }}
-                //ref={autocompleteRef}
-                placeholder={"Search for a city"}
-                query={{
-                    key: GOOGLE_API_KEY,
-                    language: "en",
-                    types: "(cities)",
-                }}
-                fetchDetails={true}
-                enablePoweredByContainer={false}
-                ref={autocompleteRef}
-                nearbyPlacesAPI="GooglePlacesSearch"
-                debounce={400}
-                minLength={2}
-                onPress={(data, details = null) => {
-                    //console.log('Selected location:', details);
-                    if (data.description === "My Location") {
-                        setLocation({
-                            name: "My Location",
-                            latitude: currentPos.coords.latitude,
-                            longitude: currentPos.coords.longitude,
-                        });
-                    } else {
-                        setLocation({
-                            name: details?.name,
-                            latitude: details?.geometry.location.lat,
-                            longitude: details?.geometry.location.lng,
-                        });
-                    }
-                    setFetchWeather(true);
-                }}
-            />
-            {/*<TouchableOpacity onPress={handleMyLocationPress} style={[tw`bg-white items-center rounded-lg`, styles.locationButton]}/>*/}
-            <TouchableOpacity onPress={handleMyLocationPress} style={[styles.locationButton]}>
-                <View style={tw`flex-row items-center `}>
-                    <Ionicons name={"navigate"} size={20} color={"#FFF"} />
-                    <Text style={{ color: '#FFF', marginLeft: 5 }}>Current location</Text>
+        <SafeAreaView style={[tw`flex-1 bg-gray-500`, Platform.OS === 'android' && { paddingTop: Constants.statusBarHeight }]}>
+            <View style={tw`flex-1`}>
+                <View style={styles.autocompleteContainer}>
+                    <GooglePlacesAutocomplete
+                        styles={{
+                            container: { flex: 0, ...tw`px-5 rounded-lg`},
+                            textInput: { fontSize: 16, ...tw` rounded-lg justify-end items-center` },
+                            listView: {...tw`rounded-lg`},
+                        }}
+                        placeholder={"Search for a city"}
+                        query={{
+                            key: GOOGLE_API_KEY,
+                            language: "en",
+                            types: "(cities)",
+                        }}
+                        fetchDetails={true}
+                        enablePoweredByContainer={false}
+                        ref={autocompleteRef}
+                        nearbyPlacesAPI="GooglePlacesSearch"
+                        debounce={400}
+                        minLength={2}
+                        onPress={(data, details = null) => {
+                            //console.log('Selected location:', details);
+                            if (data.description === "My Location") {
+                                setLocation({
+                                    name: "My Location",
+                                    latitude: currentPos.coords.latitude,
+                                    longitude: currentPos.coords.longitude,
+                                });
+                            } else {
+                                setLocation({
+                                    name: details?.name,
+                                    latitude: details?.geometry.location.lat,
+                                    longitude: details?.geometry.location.lng,
+                                });
+                            }
+                            setFetchWeather(true);
+                        }}
+                    />
                 </View>
-            </TouchableOpacity>
+                {/*<TouchableOpacity onPress={handleMyLocationPress} style={[tw`bg-white items-center rounded-lg`, styles.locationButton]}/>*/}
+                <TouchableOpacity onPress={handleMyLocationPress} style={[styles.locationButton]}>
+                    <View style={tw`flex-row items-center `}>
+                        <Ionicons name={"navigate"} size={20} color={"#000"} />
+                        <Text style={{ color: '#000', marginLeft: 5 }}>Current location</Text>
+                    </View>
+                </TouchableOpacity>
 
 
-
-            {weatherData ? (
+                {weatherData ? (
                     <View style={styles.weatherContainer}>
                         <Text style={styles.text}>{weatherData.name}</Text>
                         <Text style={styles.text}>{Math.floor(weatherData.main.temp)}°C</Text>
                         {weatherData.weather.map(weather => (
-                            <View key={weather.id} style={styles.weatherContainer}>
+                            <View key={weather.id}>
                                 <Text style={styles.text}>{weather.main}</Text>
                                 {/* <Text>Description: {weather.description}</Text>*/}
+                                <Image source={{ uri: iconUrl }} style={{ width: 100, height: 100 }} />
                             </View>
+
                         ))}
-                        <Image source={{ uri: iconUrl }} style={{ width: 100, height: 100 }} />
                         <Text>Max temperature: {Math.floor(weatherData.main.temp_max)}°C</Text>
                         <Text>Min temperature: {Math.floor(weatherData.main.temp_min)}°C</Text>
                         <Text>Feels like: {Math.floor(weatherData.main.feels_like)}°C</Text>
@@ -150,13 +152,16 @@ const WeatherScreen = () => {
                         <Text>Fetching weather...</Text>
                     </View>
                 )}
-
-
+            </View>
         </SafeAreaView>
     );
 };
 //{weatherData && currentPos &&(
 const styles = StyleSheet.create({
+    container: {
+        paddingHorizontal: 10,
+        paddingBottom: 20, // Add padding bottom to avoid the last item being hidden by the bottom navigation bar
+    },
     text: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -164,14 +169,26 @@ const styles = StyleSheet.create({
         //marginVertical: 20,
     },
     weatherContainer: {
-        paddingTop:10,
+        //backgroundColor: "#FF6F61",
+        //paddingTop:10,
         alignItems: 'center',
+        //alignSelf: "center"
+        marginTop:50,
+
+    },
+    autocompleteContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1,
+        paddingHorizontal: 5,
     },
     locationButton: {
         position: "absolute",
         bottom: 20,
         alignSelf: "center",
-        backgroundColor: "#FF6F61",
+        backgroundColor: "white",
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 10,

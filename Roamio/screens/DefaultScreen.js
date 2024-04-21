@@ -107,7 +107,7 @@ const DefaultScreen = () => {
     }, [currentPos]);
 
     return(
-        <SafeAreaView style={tw`h-full bg-white`}>
+        <SafeAreaView style={[tw`h-full bg-white`, Platform.OS === 'android' && { paddingTop: Constants.statusBarHeight }]}>
             <View style={styles.container}>
                 {showSearch && (
                     <View style={tw`flex`}>
@@ -119,9 +119,6 @@ const DefaultScreen = () => {
                                 textInput: {
                                     fontSize: 16,
                                 },
-                                listView: {
-                                    flex: 0,
-                                }
                             }}
                             ref={autocompleteRef}
                             fetchDetails={true}
@@ -130,17 +127,12 @@ const DefaultScreen = () => {
                             query={{
                                 key: GOOGLE_API_KEY,
                                 language: "en",
-                                components: "country:uk",
+                                //components: "country:uk",
                                 radius: "15000",
                                 rankBy: "distance",
-                                //location: location ? `${location.coords.latitude}, ${location.coords.longitude}` : null,
+                                location: origin ? `${origin.coords.latitude}, ${origin.coords.longitude}` : null,
                                 //position: location ? `${location.coords.latitude}, ${location.coords.longitude}` : null,
                             }}
-                            // onPress={((data, details = null) => {
-                            //  setOrigin({
-                            //       location: details?.geometry.location,
-                            //  })
-                            // })}
                             onPress={handleNewOrigin}
                             onFail={error => console.log(error)}
                             onNotFound={() => console.log('no results')}
@@ -166,9 +158,10 @@ const DefaultScreen = () => {
                         query={{
                             key: GOOGLE_API_KEY,
                             language: "en",
-                            components: "country:uk",
+                            //components: "country:uk",
                             radius: "15000",
                             rankBy: "distance",
+                            location: origin ? `${origin.coords.latitude}, ${origin.coords.longitude}` : null,
                         }}
                         fetchDetails={true}
                         enablePoweredByContainer={false}

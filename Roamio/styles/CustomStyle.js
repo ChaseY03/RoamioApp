@@ -92,6 +92,16 @@ export const styles = StyleSheet.create({
         borderRadius: 10,
         elevation: 5,
     },
+    overviewButton: {
+        position: "absolute",
+        bottom: 20,
+        right:10,
+        //alignSelf: "center",
+        backgroundColor: "#FF6F61",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+    },
     transportModeContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',

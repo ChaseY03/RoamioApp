@@ -47,6 +47,13 @@ const MapComponent = ({ currentPos, origin, destination }) => {
         }
     };
 
+    const handleOverview = () => {
+        if (!origin || !destination || !mapRef.current) return;
+        mapRef.current.fitToSuppliedMarkers(['origin', 'destination'] ,{
+            edgePadding: {top: 50, right: 50, bottom: 50, left: 50},
+        });
+    };
+
     useEffect(() => {
         if (!origin || !destination || !mapRef.current) return;
         mapRef.current.fitToSuppliedMarkers(['origin', 'destination'] ,{
@@ -123,6 +130,21 @@ const MapComponent = ({ currentPos, origin, destination }) => {
             >
                 <Ionicons name="location" size={20} color="#FFF" />
             </TouchableOpacity>
+
+
+            {origin && destination && (
+
+            <TouchableOpacity
+                style={styles.overviewButton}
+                onPress={handleOverview}
+            >
+                <View style={tw`flex-row items-center `}>
+                <Ionicons name="globe" size={20} color="#FFF" />
+                <Text style={{ color: '#FFF', marginLeft: 5 }}>Overview</Text>
+                </View>
+            </TouchableOpacity>
+
+            )}
         </View>
     );
 };
