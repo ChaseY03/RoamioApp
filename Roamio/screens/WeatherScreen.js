@@ -148,7 +148,7 @@ const WeatherScreen = () => {
 
                     </View>
                 ):(
-                    <View style={[tw`items-center`]}>
+                    <View style={[tw`flex-1 items-center my-20`]}>
                         <Text>Fetching weather...</Text>
                     </View>
                 )}
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
         //paddingTop:10,
         alignItems: 'center',
         //alignSelf: "center"
-        marginTop:50,
+        marginTop:60,
 
     },
     autocompleteContainer: {

@@ -12,24 +12,44 @@ import {fetchAttractions} from "../components/FetchAttractionsComponent";
 const AttractionsScreen = () => {
     const [location, setLocation] = useState(null);
     const [attractions, setAttractions] = useState(null);
+    const [selectedAttractionType, setSelectedAttractionType] = useState(null);
     const autocompleteRef = useRef(null);
 
     const attractionsOptions = [
-        { name: 'restaurant', displayName: 'Restaurant', library: MaterialIcons },
-        { name: 'landmark-dome', displayName: 'Landmark', library: FontAwesome6 },
-        { name: 'local-cafe', displayName: 'Cafe', library: MaterialIcons },
-        { name: 'glass-martini', displayName: 'Bar', library: FontAwesome5 },
-        { name: 'forest', displayName: 'Park', library: MaterialIcons },
-        { name: 'museum', displayName: 'Museum', library: MaterialIcons },
-        { name: 'shopping-cart', displayName: 'Shopping', library: FontAwesome5 },
-        { name: 'gas-pump', displayName: 'Fuel station', library: FontAwesome6 },
+        { name: 'globe', displayName: 'View all', type: null, library: FontAwesome6 },
+        { name: 'restaurant', displayName: 'Restaurant', type: "restaurant", library: MaterialIcons },
+        { name: 'landmark-dome', displayName: 'Landmark', type: "landmark,point_of_interest", library: FontAwesome6 },
+        { name: 'local-cafe', displayName: 'Cafe', type: "cafe", library: MaterialIcons },
+        { name: 'bakery-dining', displayName: 'Bakery', type: "bakery", library: MaterialIcons },
+        { name: 'glass-martini', displayName: 'Bar', type: "bar", library: FontAwesome5 },
+        { name: 'forest', displayName: 'Park', type: "park", library: MaterialIcons },
+        { name: 'museum', displayName: 'Museum', type: "museum", library: MaterialIcons },
+        { name: 'shopping-cart', displayName: 'Shopping', type: "shopping_mall", library: FontAwesome5 },
+        { name: 'sports-gymnastics', displayName: 'Gym', type: "gym", library: MaterialIcons },
+        { name: 'gas-pump', displayName: 'Fuel station', type: "gas_station", library: FontAwesome6 },
     ];
 
+    const handleAttractionTypePress = (type) => {
+        setSelectedAttractionType(type);
+    };
+
+    const isFocused = useIsFocused();
+    useEffect(() => {
+        // Resets when user clicks on weather screen tab
+        if (isFocused) {
+            if (autocompleteRef.current) {
+                autocompleteRef.current.setAddressText(''); // Set the value to an empty string
+                setSelectedAttractionType(null);
+                setAttractions(null);
+                setLocation(null);
+            }
+        }
+    }, [isFocused]);
 
     useEffect(() => {
         // Fetch data for AttractionsComponent whenever location changes
         if (location) {
-            fetchAttractions(location)
+            fetchAttractions(location, selectedAttractionType)
                 .then(data => {
                     if (data) {
                         //console.log("DATA",data);
@@ -42,7 +62,7 @@ const AttractionsScreen = () => {
                     console.error('Error fetching attractions:', error);
                 });
         }
-    }, [location]);
+    }, [location, selectedAttractionType]);
 
 
     return (
@@ -80,7 +100,10 @@ const AttractionsScreen = () => {
                 {/* Horizontal scroller for Attractions */}
                 <ScrollView style={styles.attractionContainer} horizontal showsHorizontalScrollIndicator={false}>
                     {attractionsOptions.map((item, index) => (
-                        <TouchableOpacity key={index} style={styles.attractionSelectContainer}>
+                        <TouchableOpacity
+                            key={index}
+                            style={styles.attractionSelectContainer}
+                            onPress={() => handleAttractionTypePress(item.type)}>
                             <View style={styles.iconContainer}>
                                 {item.library === MaterialIcons && (
                                     <MaterialIcons name={item.name} size={30} color="#FF6F61" />
