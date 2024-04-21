@@ -79,7 +79,7 @@ const WeatherScreen = () => {
 //<Text style={styles.text}>Weather screen</Text>
     return (
         //<SafeAreaView style={[tw`flex-1`, {backgroundColor: "#FF6F61"}]}>
-        <SafeAreaView style={[tw`flex-1 bg-gray-500`, Platform.OS === 'android' && { paddingTop: Constants.statusBarHeight }]}>
+        <SafeAreaView style={[tw`flex-1 bg-gray-300`, Platform.OS === 'android' && { paddingTop: Constants.statusBarHeight }]}>
             <View style={tw`flex-1`}>
                 <View style={styles.autocompleteContainer}>
                     <GooglePlacesAutocomplete

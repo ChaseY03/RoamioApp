@@ -3,29 +3,51 @@ import {View, Text, StyleSheet, Button, SafeAreaView, ScrollView, TouchableOpaci
 import tw from "tailwind-react-native-classnames";
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
-import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-import { FontAwesome6 } from '@expo/vector-icons';
+import {FontAwesome5, Ionicons, MaterialIcons,FontAwesome6} from '@expo/vector-icons';
 import AttractionsComponent from "../components/AttractionsComponent";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {useIsFocused} from "@react-navigation/native";
 import {GOOGLE_API_KEY} from '@env';
+import {fetchAttractions} from "../components/FetchAttractionsComponent";
 const AttractionsScreen = () => {
     const [location, setLocation] = useState(null);
+    const [attractions, setAttractions] = useState(null);
     const autocompleteRef = useRef(null);
 
-    const attractions = [
+    const attractionsOptions = [
         { name: 'restaurant', displayName: 'Restaurant', library: MaterialIcons },
         { name: 'landmark-dome', displayName: 'Landmark', library: FontAwesome6 },
         { name: 'local-cafe', displayName: 'Cafe', library: MaterialIcons },
-        { name: 'park', displayName: 'Park', library: MaterialIcons },
+        { name: 'glass-martini', displayName: 'Bar', library: FontAwesome5 },
+        { name: 'forest', displayName: 'Park', library: MaterialIcons },
         { name: 'museum', displayName: 'Museum', library: MaterialIcons },
-        { name: 'shopping-cart', displayName: 'Shopping', library: MaterialIcons }
+        { name: 'shopping-cart', displayName: 'Shopping', library: FontAwesome5 },
+        { name: 'gas-pump', displayName: 'Fuel station', library: FontAwesome6 },
     ];
+
+
+    useEffect(() => {
+        // Fetch data for AttractionsComponent whenever location changes
+        if (location) {
+            fetchAttractions(location)
+                .then(data => {
+                    if (data) {
+                        //console.log("DATA",data);
+                        setAttractions(data); // Update the state with fetched attractions data
+                    } else {
+                        console.error('No attractions data received.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching attractions:', error);
+                });
+        }
+    }, [location]);
+
 
     return (
         <SafeAreaView style={[tw`flex-1 bg-white`, Platform.OS === 'android' && { paddingTop: Constants.statusBarHeight }]}>
-            <Text style={styles.heading}>Attractions</Text>
+            {/*<Text style={styles.heading}>Attractions</Text>*/}
             <View style={tw`flex-1`}>
                 <View style={styles.autocompleteContainer}>
                     <GooglePlacesAutocomplete
@@ -34,7 +56,7 @@ const AttractionsScreen = () => {
                             textInput: { fontSize: 16, ...tw`rounded-lg justify-end items-center` },
                             listView: {...tw`rounded-lg`},
                         }}
-                        placeholder={"Change location"}
+                        placeholder={"Search a location"}
                         query={{
                             key: GOOGLE_API_KEY,
                             language: "en",
@@ -55,17 +77,32 @@ const AttractionsScreen = () => {
                     />
                 </View>
 
-                {/* Horizontal ScrollView for Attractions */}
+                {/* Horizontal scroller for Attractions */}
                 <ScrollView style={styles.attractionContainer} horizontal showsHorizontalScrollIndicator={false}>
-                    {attractions.map((item, index) => (
+                    {attractionsOptions.map((item, index) => (
                         <TouchableOpacity key={index} style={styles.attractionSelectContainer}>
-                            <item.library name={item.name} size={25} color="#FF6F61" />
+                            <View style={styles.iconContainer}>
+                                {item.library === MaterialIcons && (
+                                    <MaterialIcons name={item.name} size={30} color="#FF6F61" />
+                                )}
+                                {item.library === FontAwesome6 && (
+                                    <FontAwesome6 name={item.name} size={24} color="#FF6F61" />
+                                )}
+                                {item.library === FontAwesome5 && (
+                                    <FontAwesome5 name={item.name} size={24} color="#FF6F61" />
+                                )}
+                            </View>
                             <Text style={styles.attractionsSelectText}>{item.displayName}</Text>
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
+
+                {attractions && (
+                    <AttractionsComponent attractions={attractions}/>
+                )}
+
             </View>
-            <AttractionsComponent location={location}/>
+
         </SafeAreaView>
     );
 };
@@ -91,8 +128,9 @@ const styles = StyleSheet.create({
         //paddingTop: 10,
     },
     attractionContainer: {
-        flex: 1,
+       // flex: 1,
         marginTop: 50, // Adjust this value as needed to create space for Autocomplete
+        maxHeight: 60,
     },
     attractionSelectContainer: {
         marginHorizontal: 10,
@@ -103,7 +141,12 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'black',
         textAlign: 'center',
-    }
+    },
+    iconContainer: {
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
 
 export default AttractionsScreen;

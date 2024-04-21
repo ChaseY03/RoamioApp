@@ -112,7 +112,7 @@ const SavedLocationsScreen = () => {
                 </KeyboardAvoidingView>
             ) : (
                 <View style={tw`flex-1 justify-center items-center`}>
-                    <Text>Login to save locations</Text>
+                    <Text style={styles.heading}>Login to save locations</Text>
                 </View>
             )}
         </SafeAreaView>
