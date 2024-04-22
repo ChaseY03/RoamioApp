@@ -1,6 +1,6 @@
 # Roamio navigation app
 
-This is a University dissertation project 
+This is a University dissertation project
 
 A cross-platform mobile navigation app created with JavaScript built with React Native Expo
 
@@ -10,8 +10,8 @@ A cross-platform mobile navigation app created with JavaScript built with React 
 - [Tech stack](#tech-stack)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
-    - [Database](#database)
-    - [API keys](#api-keys)
+  - [Database](#database)
+  - [API keys](#api-keys)
 - [Installation](#installation-and-usage)
 - [File structure](#file-structure)
 - [Demo](#demo)
@@ -49,9 +49,9 @@ This project is currently only set up to run locally, so you will need to set up
 - Start the MySQL Server on your machine
 
 - Open MySQL Workbench:
-    - Click on the "+" icon next to "MySQL Connections" to open the connection dialog.
-    - Enter the necessary connection details such as hostname (usually "localhost"), username, and password. The default username is often "root" with an empty password, but this may vary depending on your MySQL configuration.
-    - Click "OK" to establish the connection.
+  - Click on the "+" icon next to "MySQL Connections" to open the connection dialog.
+  - Enter the necessary connection details such as hostname (usually "localhost"), username, and password. The default username is often "root" with an empty password, but this may vary depending on your MySQL configuration.
+  - Click "OK" to establish the connection.
 
 - Once connected, you will need to make a database schema named `roamio`
 
@@ -125,9 +125,9 @@ Create a new file called `.env` in the `roamio` folder
 
 - Add the following environment variables to your .env file. Head to [API keys](#api-keys) if you have no key
 
-    `GOOGLE_API_KEY = []`
+  `GOOGLE_API_KEY = []`
 
-    `WEATHER_API_KEY = []`
+  `WEATHER_API_KEY = []`
 
 
 Start the expo development server
@@ -136,8 +136,8 @@ npm start
 ```
 
 - You can either run this application by running an emulator on your development machine or through the Expo Go app on your physical phone
-    - Download the Expo Go app from the [App Store](https://apps.apple.com/app/apple-store/id982107779) or [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
-    - Once installed, ensure you are on the same network, open the Expo Go app and scan the QR code displayed in the terminal. If this does not work first try you may need to create an account/login and link it with your expo project through the terminal using ```npx expo login```
+  - Download the Expo Go app from the [App Store](https://apps.apple.com/app/apple-store/id982107779) or [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
+  - Once installed, ensure you are on the same network, open the Expo Go app and scan the QR code displayed in the terminal. If this does not work first try you may need to create an account/login and link it with your expo project through the terminal using ```npx expo login```
 
 
 Edit the `server.js` file to have your database details. Update the user and password to match your configuration
@@ -173,7 +173,7 @@ RoamioApp
 |        └── MapComponent.js                # Renders the map that is displayed on DefaultScreen
 |   └── navigation
 |        └── Navigation.js                  # Navigation structure for bottom tab navigation and account register/login
-|   └── screens/                            # Displayables on the app
+|   └── screens/                            # Viewable pages on the app
 |        └── AccountScreen.js               # Allows user to register or login
 |        └── AttractionsScreen.js           # Allows user to search for a location + ability to select attraction category
 |        └── DefaultScreen.js               # Main landing page after splash screen, allows user to search for a trip from A->B
