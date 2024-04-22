@@ -2,7 +2,7 @@
 
 This is a University dissertation project 
 
-A cross platform mobile navigation app created with JavaScript built with React Native Expo
+A cross-platform mobile navigation app created with JavaScript built with React Native Expo
 
 **Author**: [Chase Yang](https://github.com/ChaseY03) :cowboy_hat_face:
 
@@ -42,7 +42,7 @@ In order for your application to be run on your machine make sure you have got t
 
 ### Database
 
-This project is currently only set up to run locally so you will need to set up your own MySQL database
+This project is currently only set up to run locally, so you will need to set up your own MySQL database
 
 - Install [MySQL Server](https://dev.mysql.com/downloads/mysql/) and [MySQL workbench](https://dev.mysql.com/downloads/workbench/)
 
@@ -181,9 +181,9 @@ RoamioApp
 |        └── RegisterScreen.js              # Page redirected from Account, allows user to create account to app, inserts into DB
 |        └── SavedLocationsScreen.js        # If user is logged in, will render any trip details they have saved to their account
 |        └── SplashScreen.js                # Loading screen for the app, start up experience
-|        └── WeatherScreen.js               # Displays weather data of their current location + abilitiy to search for other places
+|        └── WeatherScreen.js               # Displays weather data of their current location + ability to search for other places
 |   └── styles/
-|        └── CustomStyle.js                 # Extra styling that couldnt be done with TailWind CSS
+|        └── CustomStyle.js                 # Extra styling that couldn't be done with TailWind CSS
 |   └── App.js                              # Handles the rendering of main app after splash screen
 |   └── babel.config.js                     # Allows .env files to get read in the app
 |   └── .env                                # A file you need to create, will store API keys
