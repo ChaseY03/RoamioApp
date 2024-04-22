@@ -37,7 +37,7 @@ In order for your application to be run on your machine make sure you have got t
 - Expo CLI
 
 
-This project is currently only set-up to run locally so you will need to set up your own MySQL database.
+This project is currently only set up to run locally so you will need to set up your own MySQL database
 
 - Install [MySQL Server](https://dev.mysql.com/downloads/mysql/) and [MySQL workbench](https://dev.mysql.com/downloads/workbench/)
 
