@@ -7,7 +7,7 @@ A cross platform mobile navigation app created with JavaScript built with the Re
 **Author**: [Chase Yang](https://github.com/ChaseY03) :cowboy_hat_face:
 
 ## Table of contents
-- [Tech stack](#techstack)
+- [Tech stack](#tech-stack)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
