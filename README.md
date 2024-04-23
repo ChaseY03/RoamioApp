@@ -151,6 +151,13 @@ const db = mysql.createConnection({
     port: 3306
 });
 ```
+
+Edit the pages: `AccountScreen.js` `LoginScreen.js` `RegisterScreen.js` `DirectionsComponent.js` `SavedLocationsScreen.js` to adjust your local ip
+
+```bash
+const response = await axios.get('http://[your ipv4 address]/[axios server post address]');
+```
+
 Start the back-end server connection (open a new terminal instance)
 
 ```bash
