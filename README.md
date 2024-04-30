@@ -2,7 +2,7 @@
 
 This is a University dissertation project
 
-A cross-platform mobile navigation app created with JavaScript built with React Native Expo
+A cross-platform mobile navigation app created with JavaScript built with Expo
 
 **Author**: [Chase Yang](https://github.com/ChaseY03) :cowboy_hat_face:
 
